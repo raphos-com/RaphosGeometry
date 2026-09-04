@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Addin>
+  <Guid>b6608507-f9c2-431e-a291-2d37483168fc</Guid>
+  <Name>Raphos Geometry</Name>
+  <Description>Research-grade triangle-mesh, surface and point-cloud processing.</Description>
+  <Publisher>Raphos.com</Publisher>
+  <Version>0.1.0.0</Version>
+  <Path></Path>
+  <Assembly>RaphosGeometry.dll</Assembly>
+  <Icon>Icons/RaphosGeometry.svg</Icon>
+  <SyneraVersion>12.0.0</SyneraVersion>
+</Addin>

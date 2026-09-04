@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>RaphosGeometryInterop</AssemblyName>
+    <RootNamespace>Raphos.Geometry.Interop</RootNamespace>
+    <Platforms>x64</Platforms>
+    <Configurations>Debug;Release;DebugCS</Configurations>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!--Absolute or relative path to the Synera folder. Should end with a trailing slash-->
+    <DefaultSyneraLocation>C:\Program Files\Synera_HH\</DefaultSyneraLocation>
+    <CurrentSyneraLocation>C:\Program Files\Synera\</CurrentSyneraLocation>
+    <LocalSyneraLocation>C:\Users\loren\Source\Repos\elise-mvp-development\src\SyneraApplication\bin\x64\Debug\</LocalSyneraLocation>
+    <!--Lowest priority-->
+    <SyneraLocation Condition="Exists('$(LocalSyneraLocation)')">$(LocalSyneraLocation)</SyneraLocation>
+    <SyneraLocation Condition="Exists('$(CurrentSyneraLocation)')">$(CurrentSyneraLocation)</SyneraLocation>
+    <SyneraLocation Condition="Exists('$(DefaultSyneraLocation)')">$(DefaultSyneraLocation)</SyneraLocation>
+    <PackageProjectUrl>raphos.com</PackageProjectUrl>
+    <!--Highest priority-->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RaphosGeometryNative\RaphosGeometryNative.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SyneraKernels">
+      <HintPath>$(SyneraLocation)SyneraKernels.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraCore">
+      <HintPath>$(SyneraLocation)SyneraCore.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraDataTypes">
+      <HintPath>$(SyneraLocation)SyneraDataTypes.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,116 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <UseWpf>true</UseWpf>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <IsPackable>false</IsPackable>
+    <Configurations>Debug;Release;DebugCS</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefaultSyneraLocation>C:\Program Files\Synera_HH\</DefaultSyneraLocation>
+    <CurrentSyneraLocation>C:\Program Files\Synera\</CurrentSyneraLocation>
+    <LocalSyneraLocation>C:\Users\loren\Source\Repos\elise-mvp-development\src\SyneraApplication\bin\x64\Debug\</LocalSyneraLocation>
+    <SyneraLocation Condition="Exists('$(LocalSyneraLocation)')">$(LocalSyneraLocation)</SyneraLocation>
+    <SyneraLocation Condition="Exists('$(CurrentSyneraLocation)')">$(CurrentSyneraLocation)</SyneraLocation>
+    <SyneraLocation Condition="Exists('$(DefaultSyneraLocation)')">$(DefaultSyneraLocation)</SyneraLocation>
+    <PackageProjectUrl>raphos.com</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+    <PackageReference Include="coverlet.collector" Version="3.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RaphosGeometryInterop\RaphosGeometryInterop.csproj" />
+    <ProjectReference Include="..\RaphosGeometryNative\RaphosGeometryNative.vcxproj" />
+    <ProjectReference Include="..\RaphosGeometry\RaphosGeometry.csproj" />
+    <Reference Include="System.Management">
+      <HintPath>$(SyneraLocation)System.Management.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>$(SyneraLocation)MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(SyneraLocation)Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Synera">
+      <HintPath>$(SyneraLocation)Synera.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraCore">
+      <HintPath>$(SyneraLocation)SyneraCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraCoreImplementation">
+      <HintPath>$(SyneraLocation)SyneraCoreImplementation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraDataTypes">
+      <HintPath>$(SyneraLocation)SyneraDataTypes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraKernels">
+      <HintPath>$(SyneraLocation)SyneraKernels.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraKernelsImplementation">
+      <HintPath>$(SyneraLocation)SyneraKernelsImplementation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraLicensing">
+      <HintPath>$(SyneraLocation)SyneraLicensing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraLocalization">
+      <HintPath>$(SyneraLocation)SyneraLocalization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraUnitTesting">
+      <HintPath>$(SyneraLocation)SyneraUnitTesting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraUtilities">
+      <HintPath>$(SyneraLocation)SyneraUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraWpf">
+      <HintPath>$(SyneraLocation)SyneraWpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraWpfCommon">
+      <HintPath>$(SyneraLocation)SyneraWpfCommon.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraWpfDirectX">
+      <HintPath>$(SyneraLocation)SyneraWpfDirectX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SyneraWpfDirectXExtensions">
+      <HintPath>$(SyneraLocation)SyneraWpfDirectXExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- The native ProjectReference does not flow the DLL; copy it next to the tests. -->
+  <Target Name="CopyCPPLibs" AfterTargets="Build">
+    <Copy SourceFiles="$(SolutionDir)$(Platform)\$(Configuration)\RaphosGeometryNative.dll"
+          DestinationFolder="$(TargetDir)"
+          SkipUnchangedFiles="false"
+          Condition="Exists('$(SolutionDir)$(Platform)\$(Configuration)\RaphosGeometryNative.dll')" />
+    <Copy SourceFiles="$(SolutionDir)$(Platform)\Release\RaphosGeometryNative.dll"
+          DestinationFolder="$(TargetDir)"
+          SkipUnchangedFiles="false"
+          Condition="'$(Configuration)'=='DebugCS' And Exists('$(SolutionDir)$(Platform)\Release\RaphosGeometryNative.dll')" />
+  </Target>
+</Project>

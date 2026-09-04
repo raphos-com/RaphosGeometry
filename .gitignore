@@ -1,0 +1,23 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+x64/
+*.user
+*.suo
+.vs/
+
+# NuGet
+*.nupkg
+project.assets.json
+
+# Native intermediates
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.tlog
+*.idb
+
+# Packaged add-in (built artifact)
+*.synaddin

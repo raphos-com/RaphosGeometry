@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugCS|x64">
+      <Configuration>DebugCS</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6c9bf576-70a8-4608-89b9-efede9da5edf}</ProjectGuid>
+    <RootNamespace>RaphosGeometryNative</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugCS|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugCS|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <!-- Shared include dirs. NOTE: GEOGRAM_WITH_TETGEN / GEOGRAM_WITH_TRIANGLE are deliberately
+       NOT defined (TetGen is AGPL, Shewchuk's Triangle is non-commercial). libigl (header-only,
+       MPL2) include is added for this add-in. -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;RAPHOSGEOMETRYNATIVE_EXPORTS;_WINDOWS;_USRDLL;WIN32;GEOGRAM_WITH_HLBFGS;GEOGRAM_WITH_LUA;WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>C:\dev\geogram\src\lib;C:\dev\geogram\src\lib\geogram_gfx\third_party;C:\dev\geometry-central\include;C:\dev\geometry-central\deps;C:\dev\libigl\include;C:\dev\libigl\out\build\x64-Debug\_deps\eigen-src;C:\dev\geometry-central\src\surface;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <DisableSpecificWarnings>4275;4996;4512</DisableSpecificWarnings>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>C:/dev/geogram/build/Windows/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\dev\geogram\build\Windows\lib\$(Configuration)\geogram.lib;C:\dev\geometry-central\build\src\Debug\geometry-central.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;RAPHOSGEOMETRYNATIVE_EXPORTS;_WINDOWS;_USRDLL;WIN32;GEOGRAM_WITH_HLBFGS;GEOGRAM_WITH_LUA;WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>C:\dev\geogram\src\lib;C:\dev\geogram\src\lib\geogram_gfx\third_party;C:\dev\geometry-central\include;C:\dev\geometry-central\deps;C:\dev\libigl\include;C:\dev\libigl\out\build\x64-Debug\_deps\eigen-src;C:\dev\geometry-central\src\surface;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <DisableSpecificWarnings>4275;4996;4512</DisableSpecificWarnings>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>C:/dev/geogram/build/Windows/lib/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\dev\geogram\build\Windows\lib\Release\geogram.lib;C:\dev\geometry-central\build\src\Release\geometry-central.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugCS|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;RAPHOSGEOMETRYNATIVE_EXPORTS;_WINDOWS;_USRDLL;WIN32;GEOGRAM_WITH_HLBFGS;GEOGRAM_WITH_LUA;WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>C:\dev\geogram\src\lib;C:\dev\geogram\src\lib\geogram_gfx\third_party;C:\dev\geometry-central\include;C:\dev\geometry-central\deps;C:\dev\libigl\include;C:\dev\libigl\out\build\x64-Debug\_deps\eigen-src;C:\dev\geometry-central\src\surface;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <DisableSpecificWarnings>4275;4996;4512</DisableSpecificWarnings>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>C:\dev\geogram\build\Windows\lib\Release\geogram.lib;C:\dev\geometry-central\build\src\Release\geometry-central.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="AdvancingFront.h" />
+    <ClInclude Include="AlphaShape.h" />
+    <ClInclude Include="AlphaWrap.h" />
+    <ClInclude Include="ArapDeform.h" />
+    <ClInclude Include="AutoUvAtlas.h" />
+    <ClInclude Include="BiharmonicWeights.h" />
+    <ClInclude Include="MeanCurvatureSkeleton.h" />
+    <ClInclude Include="PointCloudDenoise.h" />
+    <ClInclude Include="RansacDetect.h" />
+    <ClInclude Include="RegionAndJet.h" />
+    <ClInclude Include="SdfSegmentation.h" />
+    <ClInclude Include="CleanPointCloud.h" />
+    <ClInclude Include="ClipMeshByPlane.h" />
+    <ClInclude Include="EigenMeshUtils.h" />
+    <ClInclude Include="EstimateNormals.h" />
+    <ClInclude Include="ExactGeodesic.h" />
+    <ClInclude Include="FlipoutGeodesic.h" />
+    <ClInclude Include="HarmonicParam.h" />
+    <ClInclude Include="PointCloudStats.h" />
+    <ClInclude Include="FillHoles.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="GeoMeshUtils.h" />
+    <ClInclude Include="HausdorffDistance.h" />
+    <ClInclude Include="HeatGeodesicField.h" />
+    <ClInclude Include="LscmUv.h" />
+    <ClInclude Include="MarchingCubes.h" />
+    <ClInclude Include="ManifoldHarmonics.h" />
+    <ClInclude Include="MeshFromPointCloud.h" />
+    <ClInclude Include="MeshRepairOps.h" />
+    <ClInclude Include="OrientNormals.h" />
+    <ClInclude Include="PoissonReconstruct.h" />
+    <ClInclude Include="PrincipalCurvature.h" />
+    <ClInclude Include="QuadricDecimate.h" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="VectorHeatTransport.h" />
+    <ClInclude Include="WindingNumbers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AdvancingFront.cpp" />
+    <ClCompile Include="AlphaShape.cpp" />
+    <ClCompile Include="AlphaWrap.cpp" />
+    <ClCompile Include="ArapDeform.cpp" />
+    <ClCompile Include="AutoUvAtlas.cpp" />
+    <ClCompile Include="BiharmonicWeights.cpp" />
+    <ClCompile Include="MeanCurvatureSkeleton.cpp" />
+    <ClCompile Include="PointCloudDenoise.cpp" />
+    <ClCompile Include="RansacDetect.cpp" />
+    <ClCompile Include="RegionAndJet.cpp" />
+    <ClCompile Include="SdfSegmentation.cpp" />
+    <ClCompile Include="CleanPointCloud.cpp" />
+    <ClCompile Include="ClipMeshByPlane.cpp" />
+    <ClCompile Include="EstimateNormals.cpp" />
+    <ClCompile Include="ExactGeodesic.cpp" />
+    <ClCompile Include="FlipoutGeodesic.cpp" />
+    <ClCompile Include="HarmonicParam.cpp" />
+    <ClCompile Include="PointCloudStats.cpp" />
+    <ClCompile Include="FillHoles.cpp" />
+    <ClCompile Include="HausdorffDistance.cpp" />
+    <ClCompile Include="HeatGeodesicField.cpp" />
+    <ClCompile Include="LscmUv.cpp" />
+    <ClCompile Include="MarchingCubes.cpp" />
+    <ClCompile Include="ManifoldHarmonics.cpp" />
+    <ClCompile Include="MeshFromPointCloud.cpp" />
+    <ClCompile Include="MeshRepairOps.cpp" />
+    <ClCompile Include="OrientNormals.cpp" />
+    <ClCompile Include="PoissonReconstruct.cpp" />
+    <ClCompile Include="PrincipalCurvature.cpp" />
+    <ClCompile Include="QuadricDecimate.cpp" />
+    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="VectorHeatTransport.cpp" />
+    <ClCompile Include="WindingNumbers.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,146 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWpf>true</UseWpf>
+    <Platforms>x64</Platforms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Configurations>Debug;Release;DebugCS</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'!='Release'">
+    <!-- Dev builds deploy loose files straight into the Synera add-ins folder. -->
+    <OutputPath>C:\ProgramData\Synera\Addins\$(AssemblyName)</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!--Absolute or relative path to the Synera folder. Should end with a trailing slash-->
+    <DefaultSyneraLocation>C:\Program Files\Synera_HH\</DefaultSyneraLocation>
+    <CurrentSyneraLocation>C:\Program Files\Synera\</CurrentSyneraLocation>
+    <LocalSyneraLocation>C:\Users\loren\Source\Repos\elise-mvp-development\src\SyneraApplication\bin\x64\Debug\</LocalSyneraLocation>
+    <!--Lowest priority-->
+    <SyneraLocation Condition="Exists('$(LocalSyneraLocation)')">$(LocalSyneraLocation)</SyneraLocation>
+    <SyneraLocation Condition="Exists('$(CurrentSyneraLocation)')">$(CurrentSyneraLocation)</SyneraLocation>
+    <SyneraLocation Condition="Exists('$(DefaultSyneraLocation)')">$(DefaultSyneraLocation)</SyneraLocation>
+    <!--Highest priority-->
+    <RootNamespace>Raphos.Geometry</RootNamespace>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <PackageProjectUrl>raphos.com</PackageProjectUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="RaphosGeometry.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RaphosGeometryInterop\RaphosGeometryInterop.csproj" />
+    <ProjectReference Include="..\RaphosGeometryNative\RaphosGeometryNative.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>$(SyneraLocation)MathNet.Numerics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Synera">
+      <HintPath>$(SyneraLocation)Synera.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraCore">
+      <HintPath>$(SyneraLocation)SyneraCore.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraCoreImplementation">
+      <HintPath>$(SyneraLocation)SyneraCoreImplementation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraDataTypes">
+      <HintPath>$(SyneraLocation)SyneraDataTypes.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraKernels">
+      <HintPath>$(SyneraLocation)SyneraKernels.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraKernelsImplementation">
+      <HintPath>$(SyneraLocation)SyneraKernelsImplementation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraLicensing">
+      <HintPath>$(SyneraLocation)SyneraLicensing.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraLocalization">
+      <HintPath>$(SyneraLocation)SyneraLocalization.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraUtilities">
+      <HintPath>$(SyneraLocation)SyneraUtilities.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraWpf">
+      <HintPath>$(SyneraLocation)SyneraWpf.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraWpfCommon">
+      <HintPath>$(SyneraLocation)SyneraWpfCommon.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraWpfDirectX">
+      <HintPath>$(SyneraLocation)SyneraWpfDirectX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SyneraWpfDirectXExtensions">
+      <HintPath>$(SyneraLocation)SyneraWpfDirectXExtensions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="pskernel_net">
+      <HintPath>$(SyneraLocation)pskernel_net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy per-node icons and help example graphs next to the assembly. -->
+  <Target Name="CopyIconsAndHelpFiles" AfterTargets="Build">
+    <ItemGroup>
+      <Icons Include="$(ProjectDir)Icons/**/*" />
+      <Help Include="$(ProjectDir)Help/**/*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(Icons)" DestinationFolder="$(TargetDir)Icons/%(Icons.RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Help)" DestinationFolder="$(TargetDir)Help/%(Help.RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Bring the native DLL next to the managed assembly (native ProjectReference does not flow it).
+       The native project's output location differs between a solution build ($(SolutionDir)$(Platform)\...)
+       and a standalone build (RaphosGeometryNative\$(Platform)\...); try both. DebugCS uses the Release DLL. -->
+  <PropertyGroup>
+    <NativeConfig Condition="'$(Configuration)'=='DebugCS'">Release</NativeConfig>
+    <NativeConfig Condition="'$(NativeConfig)'==''">$(Configuration)</NativeConfig>
+    <NativeFromSln>$(SolutionDir)$(Platform)\$(NativeConfig)\RaphosGeometryNative.dll</NativeFromSln>
+    <NativeFromProj>$(MSBuildProjectDirectory)\..\RaphosGeometryNative\$(Platform)\$(NativeConfig)\RaphosGeometryNative.dll</NativeFromProj>
+  </PropertyGroup>
+  <Target Name="CopyCPPLibs" AfterTargets="Build">
+    <Copy SourceFiles="$(NativeFromSln)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="false"
+          Condition="Exists('$(NativeFromSln)')" />
+    <Copy SourceFiles="$(NativeFromProj)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="false"
+          Condition="!Exists('$(NativeFromSln)') And Exists('$(NativeFromProj)')" />
+  </Target>
+
+  <!-- Create the .synaddin package for Release, named with the manifest version. -->
+  <Target Name="CreateAddinPackage" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Release'">
+    <PropertyGroup>
+      <AddinTargetFolder>$(TargetDir.TrimEnd('\'))</AddinTargetFolder>
+    </PropertyGroup>
+    <Exec Command="echo Create addin package" />
+    <Exec Command="&quot;$(SyneraLocation)SyneraAddinManager.exe&quot; pack --path &quot;$(AddinTargetFolder)&quot; --exclude *.pdb *RoslynCA.json" />
+    <XmlPeek XmlInputPath="$(ProjectDir)$(AssemblyName).addin" Query="/Addin/Version/text()">
+      <Output TaskParameter="Result" PropertyName="AddinVersion" />
+    </XmlPeek>
+    <PropertyGroup>
+      <PackedAddinDir>$([System.IO.Directory]::GetParent('$(AddinTargetFolder)').FullName)</PackedAddinDir>
+    </PropertyGroup>
+    <Move Condition="'$(AddinVersion)' != '' And Exists('$(PackedAddinDir)\$(AssemblyName).synaddin')"
+          SourceFiles="$(PackedAddinDir)\$(AssemblyName).synaddin"
+          DestinationFiles="$(PackedAddinDir)\$(AssemblyName)_$(AddinVersion).synaddin"
+          OverwriteReadOnlyFiles="true" />
+    <Message Importance="high" Text="Packaged add-in as $(AssemblyName)_$(AddinVersion).synaddin" />
+  </Target>
+</Project>
