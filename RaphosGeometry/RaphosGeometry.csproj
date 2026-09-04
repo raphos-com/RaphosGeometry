@@ -125,7 +125,7 @@
   </Target>
 
   <!-- Create the .synaddin package for Release, named with the manifest version. -->
-  <Target Name="CreateAddinPackage" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Release'">
+  <Target Name="CreateAddinPackage" AfterTargets="PostBuildEvent" DependsOnTargets="CopyIconsAndHelpFiles" Condition="'$(Configuration)'=='Release'">
     <PropertyGroup>
       <AddinTargetFolder>$(TargetDir.TrimEnd('\'))</AddinTargetFolder>
     </PropertyGroup>

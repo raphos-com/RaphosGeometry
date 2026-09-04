@@ -35,28 +35,36 @@ MSBuild RaphosGeometry.sln -restore -p:Configuration=Release -p:Platform=x64
 Tests are validated headlessly with VS's `vstest.console.exe` against the built
 `TestRaphosGeometry.dll` (the interop is decoupled from the Synera app runtime for this).
 
-## Status — 29 nodes, all tested (30 MSTest cases green)
+## Status — complete: 38 nodes, all tested (39 MSTest cases green)
 
-Categories: Remeshing (5) · Point Cloud (8) · Analysis (8) · Parameterization (4) · Deformation (4).
+All five phases are implemented. Every node has a per-node SVG icon (light + dark) and a
+`.syn` example graph, placed exactly like the other add-ins
+(`Icons/RaphosGeometryCategory/<Sub>/<Class>.svg`, `Help/RaphosGeometryCategory/<Sub>/<Class>/<Class>.syn`).
+The Release `.synaddin` bundles all 38 examples and 79 icons; every example is verified to load and
+execute in Synera via `SyneraHeadless.exe info`.
 
-- **Phase 0 — Skeleton:** complete. Three-layer solution + `.synaddin` pipeline + native round-trip.
-- **Phase 1 — MVP nodes** (analytic ground-truth tests): Quadric Decimate, Fill Holes,
-  Heat Geodesic Field, Curvature Tensor, Winding Number, Marching Cubes.
-- **Phase 2 — complete:**
-  - Remeshing: Repair Mesh, Make Consistent, Remove Self-Intersections. (Stitch Borders is covered
-    by Repair Mesh's merge tolerance.)
-  - Analysis: Exact Geodesic Field, Hausdorff Distance, Geodesic Path (FlipOut), Manifold Harmonics,
-    Vector Heat.
-  - Parameterization: UV Unwrap (LSCM), Harmonic Parameterization, UV Unwrap (ARAP), Auto UV Atlas.
-  - Deformation: Marching Cubes, Clip Mesh by Plane, ARAP Deformation, Biharmonic Weights (BBW).
-  - Point cloud: Mesh from Point Cloud (Co3Ne), Poisson Reconstruction, Alpha Shape, Remove Outliers,
-    Estimate Normals, Orient Normals (MST), Average Spacing, Simplify Point Cloud.
-- **Phases 3–4 (remaining):** from-scratch CGAL-parity algorithms — RANSAC shape detection,
-  region-growing detection, WLOP consolidation, bilateral point denoise, jet-fitting ridges,
-  SDF segmentation, alpha wrapping, mean-curvature skeleton, advancing-front reconstruction.
+Categories: Remeshing (6) · Point Cloud (11) · Analysis (9) · Parameterization (4) · Deformation (4) · Detection (4).
+
+- **Phase 0 — Skeleton** · **Phase 1 — MVP:** Quadric Decimate, Fill Holes, Heat Geodesic Field,
+  Curvature Tensor, Winding Number, Marching Cubes.
+- **Phase 2 — imported (permissive libs):** Repair Mesh, Make Consistent, Remove Self-Intersections,
+  Exact Geodesic Field, Hausdorff Distance, Geodesic Path (FlipOut), Manifold Harmonics, Vector Heat,
+  UV Unwrap (LSCM / Harmonic / ARAP), Auto UV Atlas, Clip Mesh by Plane, ARAP Deformation, Biharmonic
+  Weights, Mesh from Point Cloud (Co3Ne), Poisson Reconstruction, Alpha Shape, Remove Outliers,
+  Estimate Normals, Orient Normals (MST), Average Spacing, Simplify Point Cloud.
+- **Phases 3–4 — from-scratch (CGAL-parity, permissive by construction):** RANSAC Shape Detection,
+  Region Growing, Jet Ridges, WLOP Consolidate, Bilateral Denoise, SDF Segmentation, Alpha Wrap,
+  Mean-Curvature Skeleton, Advancing Front. (Stitch Borders is covered by Repair Mesh's merge tolerance.)
+
+### Examples
+
+Each node ships a minimal single-node `.syn` example under `Help/`. They are generated as valid
+Synera documents (verified to open and run headlessly) and are intended as starting points to open
+and extend in Synera.
 
 ### Notes on library gaps found
 - Manifold Harmonics: Geogram's spectral solver needs OpenNL's ARPACK extension (absent from the
   prebuilt `geogram.lib`), so it is reimplemented with libigl's cotangent Laplacian + Voronoi mass
   matrix and a dense Eigen generalized eigensolver (fine for small/medium meshes).
 - QEM decimation uses libigl `qslim` (Geogram only offers vertex-clustering).
+- Poisson uses Geogram's bundled Kazhdan `PoissonRecon` (no first-class wrapper header).
