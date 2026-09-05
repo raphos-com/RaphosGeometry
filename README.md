@@ -60,10 +60,11 @@ Categories: Remeshing (6) · Point Cloud (11) · Analysis (9) · Parameterizatio
 
 Each node ships a runnable end-to-end `.syn` example under `Help/`. Every example is a real working
 graph: a text annotation names the node, **number sliders** drive the scalar parameters (nothing is
-hardcoded), and real **Stanford-bunny geometry is embedded** (as internalized point data) and fed into
-the node — directly for point-cloud nodes, or reconstructed to a mesh via the add-in's own *Mesh from
-Point Cloud* node for mesh nodes. All 38 examples are verified to load and execute in Synera
-(`SyneraHeadless.exe`). The bunny point set is a subsampled, normalized copy of the Stanford bunny.
+hardcoded), and a real **3D dodo model** is loaded via a **relative-path import** — the
+`RelativeFilePathContainer` node points at `dodo_small.obj` (a decimated dodo placed next to each
+`.syn`, so paths stay relative and portable) feeding `ImportGeometryAsMesh`. Mesh nodes take the
+imported mesh directly; point-cloud nodes take its vertices via `DeconstructMesh`. All 38 examples are
+verified to load and execute in Synera (`SyneraHeadless.exe`). The dodo asset lives in `_material/dodo`.
 
 ### Notes on library gaps found
 - Manifold Harmonics: Geogram's spectral solver needs OpenNL's ARPACK extension (absent from the

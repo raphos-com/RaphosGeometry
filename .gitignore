@@ -10,8 +10,8 @@ x64/
 *.nupkg
 project.assets.json
 
-# Native intermediates
-*.obj
+# Native intermediates (build output lives under x64/ which is already ignored above;
+# do NOT blanket-ignore *.obj — the example .obj geometry assets must be tracked)
 *.pdb
 *.ilk
 *.exp
