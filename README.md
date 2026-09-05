@@ -30,7 +30,37 @@ MSBuild RaphosGeometry.sln -restore -p:Configuration=Release -p:Platform=x64
 ```
 
 - **Debug / DebugCS** deploy loose files to `C:\ProgramData\Synera\Addins\RaphosGeometry\`.
-- **Release** produces a versioned `RaphosGeometry_<version>.synaddin` package.
+- **Release** obfuscates both managed assemblies with Obfuscar (`KeepPublicApi` — Synera
+  still finds node types by their `[Guid]`), then produces a versioned
+  `RaphosGeometry_<version>.synaddin` package.
+
+### Required Geogram patch (Debug builds under newer MSVC)
+Geogram's `Memory::aligned_allocator` (`src/lib/geogram/basic/memory.h`) predates the C++
+Allocator requirement that an allocator be constructible from a rebound allocator of a
+different value type. Newer MSVC standard libraries exercise exactly that under
+`_ITERATOR_DEBUG_LEVEL != 0` — i.e. **Debug** builds — where a container rebinds its
+allocator to `std::_Container_proxy` and copies it from a `const` allocator, producing:
+
+```
+xmemory(...): error C2440: 'static_cast': cannot convert from 'const _Alloc'
+              to 'GEO::Memory::aligned_allocator<U,64>'   [U = std::_Container_proxy]
+```
+
+Fix (applied in the local `C:\dev\geogram` checkout — it lives outside this repo, so it is
+recorded here rather than committed): add a templated converting constructor to
+`aligned_allocator` (and an explicit default constructor, since declaring the converting
+one suppresses the implicit default), and make the existing conversion operator `const`:
+
+```cpp
+aligned_allocator() = default;
+template <class U, int A2>
+aligned_allocator(const aligned_allocator<U, A2>&) noexcept { }
+// ...and further down:
+template <class T2, int A2> operator aligned_allocator<T2, A2>() const { ... }
+```
+
+The change is additive and stateless (Release builds compile without it, since
+`_ITERATOR_DEBUG_LEVEL == 0` never instantiates the proxy path).
 
 Tests are validated headlessly with VS's `vstest.console.exe` against the built
 `TestRaphosGeometry.dll` (the interop is decoupled from the Synera app runtime for this).

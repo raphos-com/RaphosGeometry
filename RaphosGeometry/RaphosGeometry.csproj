@@ -124,13 +124,53 @@
           Condition="!Exists('$(NativeFromSln)') And Exists('$(NativeFromProj)')" />
   </Target>
 
-  <!-- Create the .synaddin package for Release, named with the manifest version. -->
-  <Target Name="CreateAddinPackage" AfterTargets="PostBuildEvent" DependsOnTargets="CopyIconsAndHelpFiles" Condition="'$(Configuration)'=='Release'">
+  <!--
+    Release-only obfuscation, as the other Raphos add-ins do it (see RaphosBundle).
+
+    Both managed assemblies go through it: RaphosGeometry.dll (the node palette) and
+    RaphosGeometryInterop.dll (the P/Invoke bridge), which ships inside the add-in
+    folder and is where the marshalling lives. `KeepPublicApi` keeps that safe. Synera
+    finds node types by the [Guid] on a public class, names the graph data types in every
+    saved .syn, and the node assembly's calls into the interop bridge are public API.
+    What gets renamed, and has its strings hidden, is everything private and internal.
+
+    The config is generated rather than committed because its AssemblySearchPath entries
+    name an exact .NET ref pack, and those change under you whenever the SDK updates.
+  -->
+  <Target Name="GenerateObfuscarConfig" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
+    <PropertyGroup>
+      <!-- $(ProjectDir) and $(SyneraLocation) end with `\`; a literal "C:\...\" collapses
+           to C:\... plus a stray `"` on the way to PowerShell. Trim so paths stay clean. -->
+      <_ProjectDirTrimmed>$(ProjectDir.TrimEnd('\'))</_ProjectDirTrimmed>
+      <_SyneraLocationTrimmed>$(SyneraLocation.TrimEnd('\'))</_SyneraLocationTrimmed>
+    </PropertyGroup>
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(_ProjectDirTrimmed)\_Obfuscar\generate-obfuscar.ps1&quot; -ProjectDir &quot;$(_ProjectDirTrimmed)&quot; -SyneraDir &quot;$(_SyneraLocationTrimmed)&quot;" />
+  </Target>
+
+  <!--
+    Obfuscar writes into an Out\ subfolder; the results are copied back over the build
+    output so everything downstream (packing, the headless test) sees the obfuscated
+    assemblies and nothing else. Mapping.txt is the rename table and must not ship: it is
+    exactly the file that undoes this. Start from the compiler's own output every time, so
+    a second Release build never feeds an already-obfuscated assembly through again.
+  -->
+  <Target Name="ObfuscateAddin" AfterTargets="GenerateObfuscarConfig" Condition="'$(Configuration)'=='Release'">
+    <Copy SourceFiles="@(IntermediateAssembly)" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="@(ReferencePath->WithMetadataValue('Filename', 'RaphosGeometryInterop'))" DestinationFolder="$(TargetDir)" />
+    <Exec Command="&quot;$(ProjectDir)_Obfuscar\Obfuscar.Console.exe&quot; &quot;$(ProjectDir)_Obfuscar\obfuscar_Release_x64.xml&quot;" WorkingDirectory="$(ProjectDir)" />
+    <Copy SourceFiles="$(TargetDir)Out\RaphosGeometry.dll;$(TargetDir)Out\RaphosGeometryInterop.dll" DestinationFolder="$(TargetDir)" />
+    <Delete Files="$(TargetDir)Mapping.txt" />
+    <RemoveDir Directories="$(TargetDir)Out" />
+  </Target>
+
+  <!-- Create the .synaddin package for Release, named with the manifest version.
+       After obfuscation, never before it, and after the icons/help/native DLL are in place. -->
+  <Target Name="CreateAddinPackage" AfterTargets="ObfuscateAddin" DependsOnTargets="CopyIconsAndHelpFiles;CopyCPPLibs" Condition="'$(Configuration)'=='Release'">
     <PropertyGroup>
       <AddinTargetFolder>$(TargetDir.TrimEnd('\'))</AddinTargetFolder>
     </PropertyGroup>
     <Exec Command="echo Create addin package" />
-    <Exec Command="&quot;$(SyneraLocation)SyneraAddinManager.exe&quot; pack --path &quot;$(AddinTargetFolder)&quot; --exclude *.pdb *RoslynCA.json" />
+    <Exec Command="&quot;$(SyneraLocation)SyneraAddinManager.exe&quot; pack --path &quot;$(AddinTargetFolder)&quot; --exclude *.pdb *RoslynCA.json Mapping.txt" />
     <XmlPeek XmlInputPath="$(ProjectDir)$(AssemblyName).addin" Query="/Addin/Version/text()">
       <Output TaskParameter="Result" PropertyName="AddinVersion" />
     </XmlPeek>

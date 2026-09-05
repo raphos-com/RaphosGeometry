@@ -21,3 +21,8 @@ project.assets.json
 
 # Packaged add-in (built artifact)
 *.synaddin
+
+# Obfuscar: generated config tracks the machine's .NET ref pack, and Mapping.txt is the
+# rename table that would undo the obfuscation. Neither should be committed.
+**/_Obfuscar/obfuscar.generated.xml
+Mapping.txt
