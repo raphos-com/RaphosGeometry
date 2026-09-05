@@ -58,9 +58,12 @@ Categories: Remeshing (6) · Point Cloud (11) · Analysis (9) · Parameterizatio
 
 ### Examples
 
-Each node ships a minimal single-node `.syn` example under `Help/`. They are generated as valid
-Synera documents (verified to open and run headlessly) and are intended as starting points to open
-and extend in Synera.
+Each node ships a runnable end-to-end `.syn` example under `Help/`. Every example is a real working
+graph: a text annotation names the node, **number sliders** drive the scalar parameters (nothing is
+hardcoded), and real **Stanford-bunny geometry is embedded** (as internalized point data) and fed into
+the node — directly for point-cloud nodes, or reconstructed to a mesh via the add-in's own *Mesh from
+Point Cloud* node for mesh nodes. All 38 examples are verified to load and execute in Synera
+(`SyneraHeadless.exe`). The bunny point set is a subsampled, normalized copy of the Stanford bunny.
 
 ### Notes on library gaps found
 - Manifold Harmonics: Geogram's spectral solver needs OpenNL's ARPACK extension (absent from the
