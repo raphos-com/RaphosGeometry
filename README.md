@@ -113,10 +113,11 @@ The output is visualized per result type:
 - **UV unwrap** (LSCM / Harmonic / ARAP / atlas): rebuilt into a flat mesh (`Construct Mesh` from the
   UV points + the original faces) so you see the layout.
 
-A caveat: `RANSAC`, `Region Growing` and `Vector Heat` read the whole surface into a field that is
-degenerate on an organic closed model (single-segment labels, a near-normal transport direction), so
-those three examples show the input and leave the result on the node's output port rather than forcing
-an empty/uniform overlay.
+A few algorithms are shown on the mesh they are actually defined for, rather than forced onto the
+organic dodo (where their field is degenerate): UV unwrap on an open patch (`dodo_open.stl`), Curvature
+Tensor / Jet Ridges on the clean full-res mesh (`dodo_full.stl`), Geodesic Path and Vector Heat on an
+**icosphere** (`ico.stl`), Biharmonic Weights on a flat **grid** (`grid.stl`), and RANSAC / Region
+Growing on a subdivided **cube** (`planes.stl`) whose six planes give several colored segments.
 
 Geometry is a real **3D dodo model** (from `raphos-website/artifacts/dodo`, in `_material/dodo`).
 `ImportGeometryAsMesh` is Parasolid-based and does **not** read `.obj`, so the dodo is provided as
