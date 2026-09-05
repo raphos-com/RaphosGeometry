@@ -61,10 +61,12 @@ Categories: Remeshing (6) · Point Cloud (11) · Analysis (9) · Parameterizatio
 Each node ships a runnable end-to-end `.syn` example under `Help/`. Every example is a real working
 graph: a text annotation names the node, **number sliders** drive the scalar parameters (nothing is
 hardcoded), and a real **3D dodo model** is loaded via a **relative-path import** — the
-`RelativeFilePathContainer` node points at `dodo_small.obj` (a decimated dodo placed next to each
-`.syn`, so paths stay relative and portable) feeding `ImportGeometryAsMesh`. Mesh nodes take the
-imported mesh directly; point-cloud nodes take its vertices via `DeconstructMesh`. All 38 examples are
-verified to load and execute in Synera (`SyneraHeadless.exe`). The dodo asset lives in `_material/dodo`.
+`RelativeFilePathContainer` node points at a dodo file placed next to each `.syn` (so paths stay
+relative and portable) feeding `ImportGeometryAsMesh`. Mesh nodes load the decimated dodo mesh
+(`dodo_small.obj`); point-cloud and reconstruction nodes load a dodo **point cloud**
+(`dodo_points.obj`) so a reconstruction example is genuinely points→mesh, not a round-trip.
+All 38 examples are verified to load and execute in Synera (`SyneraHeadless.exe`). The dodo asset
+(from `raphos-website/artifacts/dodo`) lives in `_material/dodo`.
 
 ### Notes on library gaps found
 - Manifold Harmonics: Geogram's spectral solver needs OpenNL's ARPACK extension (absent from the
