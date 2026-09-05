@@ -17,7 +17,7 @@ namespace Raphos.Geometry.Components.Detection
             : base(new LocalizableString("Region Growing"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Detection;
+            Subcategory = Shared.PointCloud;
             Keywords = new LocalizableString("region growing segment smooth normal cluster point cloud");
             Description = new LocalizableString(
                 "Segment a point cloud into smooth (near-planar) regions by growing from seeds along the "

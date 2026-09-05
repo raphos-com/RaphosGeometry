@@ -70,10 +70,15 @@ Tests are validated headlessly with VS's `vstest.console.exe` against the built
 All five phases are implemented. Every node has a per-node SVG icon (light + dark) and a
 `.syn` example graph, placed exactly like the other add-ins
 (`Icons/RaphosGeometryCategory/<Sub>/<Class>.svg`, `Help/RaphosGeometryCategory/<Sub>/<Class>/<Class>.syn`).
-The Release `.synaddin` bundles all 38 examples and 79 icons; every example is verified to load and
-execute in Synera via `SyneraHeadless.exe info`.
+The Release `.synaddin` bundles all 38 examples and 79 icons; every example is verified to load **and
+actually execute** in Synera via `SyneraHeadless.exe execute` (which surfaces per-node errors that the
+lighter `info` check does not).
 
-Categories: Remeshing (6) · Point Cloud (11) · Analysis (9) · Parameterization (4) · Deformation (4) · Detection (4).
+The palette category **Raphos Geometry** has three subcategories, kept few so the ribbon stays compact
+(each subcategory is one ribbon group):
+- **Mesh** (14) — remeshing/repair, UV parameterization, deformation, marching cubes.
+- **Analysis** (9) — curvature, geodesics, winding number, spectral/heat fields, distances.
+- **Point Cloud** (15) — reconstruction, normals, denoise/simplify, and shape/feature detection.
 
 - **Phase 0 — Skeleton** · **Phase 1 — MVP:** Quadric Decimate, Fill Holes, Heat Geodesic Field,
   Curvature Tensor, Winding Number, Marching Cubes.
@@ -89,14 +94,27 @@ Categories: Remeshing (6) · Point Cloud (11) · Analysis (9) · Parameterizatio
 ### Examples
 
 Each node ships a runnable end-to-end `.syn` example under `Help/`. Every example is a real working
-graph: a text annotation names the node, **number sliders** drive the scalar parameters (nothing is
-hardcoded), and a real **3D dodo model** is loaded via a **relative-path import** — the
-`RelativeFilePathContainer` node points at a dodo file placed next to each `.syn` (so paths stay
-relative and portable) feeding `ImportGeometryAsMesh`. Mesh nodes load the decimated dodo mesh
-(`dodo_small.obj`); point-cloud and reconstruction nodes load a dodo **point cloud**
-(`dodo_points.obj`) so a reconstruction example is genuinely points→mesh, not a round-trip.
-All 38 examples are verified to load and execute in Synera (`SyneraHeadless.exe`). The dodo asset
-(from `raphos-website/artifacts/dodo`) lives in `_material/dodo`.
+graph: two text annotations label it — the node name (large) and a **description paragraph** (default
+size, taken from the node's own description) — the geometry is loaded via a **relative-path import**
+(`RelativeFilePathContainer` → `ImportStl`, with the mesh file placed next to each `.syn` so paths stay
+relative and portable), and constant parameters (scalars, points, plane, grid) are **internalized on
+the node inputs** so they align on every data path and carry the intended value.
+
+Geometry is a real **3D dodo model** (from `raphos-website/artifacts/dodo`, in `_material/dodo`).
+`ImportGeometryAsMesh` is Parasolid-based and does **not** read `.obj`, so the dodo is provided as
+**STL** (Synera's native triangle-mesh format, read by `ImportStl`). Most nodes use `dodo.stl` — a
+clean ~3k-triangle decimation produced by this add-in's own Quadric Decimate node from the full-res
+original (a naive cluster decimation left non-manifold slivers that crash libigl/geometry-central).
+A few algorithms are demonstrated on the mesh type they are actually defined for — as each one's unit
+test does — rather than forced onto a closed organic model:
+- UV unwrap (LSCM / Harmonic / ARAP) need an **open** mesh → `dodo_open.stl` (the dodo with its
+  bottom cap removed, giving a boundary).
+- Curvature Tensor's libigl quadric fit is sensitive to decimation artifacts → the clean full-res
+  `dodo_full.stl`.
+- Geodesic Path (FlipOut) → an **icosphere** (`ico.stl`); Biharmonic Weights → a flat **grid**
+  (`grid.stl`) with corner handles.
+
+All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe execute`).
 
 ### Notes on library gaps found
 - Manifold Harmonics: Geogram's spectral solver needs OpenNL's ARPACK extension (absent from the

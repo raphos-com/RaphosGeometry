@@ -19,7 +19,7 @@ namespace Raphos.Geometry.Components.Detection
             : base(new LocalizableString("Jet Ridges"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Detection;
+            Subcategory = Shared.PointCloud;
             Keywords = new LocalizableString("jet fitting ridges curvature monge point cloud feature");
             Description = new LocalizableString(
                 "Per-point principal curvatures via Cazals-Pouget jet (Monge quadric) fitting on a point cloud. "

@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Parameterization
             : base(new LocalizableString("UV Unwrap (ARAP)"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Parameterization;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("arap uv unwrap as-rigid-as-possible low distortion parameterization");
             Description = new LocalizableString(
                 "As-rigid-as-possible UV unwrapping (free boundary), initialized with a harmonic map and "

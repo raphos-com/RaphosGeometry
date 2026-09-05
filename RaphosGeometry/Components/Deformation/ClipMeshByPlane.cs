@@ -17,7 +17,7 @@ namespace Raphos.Geometry.Components.Deformation
             : base(new LocalizableString("Clip Mesh by Plane"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Deformation;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("clip cut plane section trim half-space slice mesh");
             Description = new LocalizableString(
                 "Clip a triangle mesh with a plane, keeping the half on the back side of the plane normal. "

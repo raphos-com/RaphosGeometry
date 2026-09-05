@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Deformation
             : base(new LocalizableString("Marching Cubes"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Deformation;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("marching cubes isosurface contour implicit field level set");
             Description = new LocalizableString(
                 "Extract an isosurface triangle mesh from a scalar field sampled on a regular grid. "

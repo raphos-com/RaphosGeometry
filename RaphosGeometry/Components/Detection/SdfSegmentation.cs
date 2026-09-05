@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Detection
             : base(new LocalizableString("SDF Segmentation"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Detection;
+            Subcategory = Shared.PointCloud;
             Keywords = new LocalizableString("sdf shape diameter segment part thickness semantic cluster");
             Description = new LocalizableString(
                 "Segment a mesh by the Shape Diameter Function (local thickness), giving a semantic part split "

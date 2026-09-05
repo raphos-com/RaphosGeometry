@@ -19,7 +19,7 @@ namespace Raphos.Geometry.Components.Deformation
             : base(new LocalizableString("Biharmonic Weights"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Deformation;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("bbw bounded biharmonic weights skinning handles rig influence");
             Description = new LocalizableString(
                 "Bounded biharmonic skinning weights for a set of point handles: smooth, non-negative and "

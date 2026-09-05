@@ -17,7 +17,7 @@ namespace Raphos.Geometry.Components.Parameterization
             : base(new LocalizableString("UV Unwrap (LSCM)"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Parameterization;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("uv unwrap lscm conformal parameterization flatten texture");
             Description = new LocalizableString(
                 "Least-squares conformal UV unwrapping of an open (disk-topology) mesh. "

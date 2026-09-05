@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Remeshing
             : base(new LocalizableString("Repair Mesh"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Remeshing;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("repair clean merge coincident duplicate degenerate weld");
             Description = new LocalizableString(
                 "Clean up a triangle mesh: merge colocated vertices, remove duplicate and degenerate facets, "

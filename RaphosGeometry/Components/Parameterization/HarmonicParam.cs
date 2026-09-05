@@ -17,7 +17,7 @@ namespace Raphos.Geometry.Components.Parameterization
             : base(new LocalizableString("Harmonic Parameterization"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Parameterization;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("harmonic parameterization uv flatten laplacian fixed boundary");
             Description = new LocalizableString(
                 "Fixed-boundary harmonic UV parameterization: the mesh boundary is pinned to a circle and "

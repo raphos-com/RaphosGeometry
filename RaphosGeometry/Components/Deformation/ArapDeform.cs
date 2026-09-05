@@ -19,7 +19,7 @@ namespace Raphos.Geometry.Components.Deformation
             : base(new LocalizableString("ARAP Deformation"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Deformation;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("arap deform handle as-rigid-as-possible drag pose morph");
             Description = new LocalizableString(
                 "As-rigid-as-possible handle-based deformation: the nearest vertex to each handle point is "

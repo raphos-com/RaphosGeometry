@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Parameterization
             : base(new LocalizableString("Auto UV Atlas"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Parameterization;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("uv atlas chart segmentation pack seam texture unwrap");
             Description = new LocalizableString(
                 "Segment a mesh into charts along sharp edges and flatten + pack them (Geogram atlas). "

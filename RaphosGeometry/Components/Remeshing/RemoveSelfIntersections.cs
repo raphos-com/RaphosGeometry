@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Remeshing
             : base(new LocalizableString("Remove Self-Intersections"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Remeshing;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("self intersection resolve clean overlap exact");
             Description = new LocalizableString(
                 "Resolve self-intersections in a triangle mesh into a clean, intersection-free triangulation "

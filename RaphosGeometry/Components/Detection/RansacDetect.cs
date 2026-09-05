@@ -17,7 +17,7 @@ namespace Raphos.Geometry.Components.Detection
             : base(new LocalizableString("RANSAC Shape Detection"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Detection;
+            Subcategory = Shared.PointCloud;
             Keywords = new LocalizableString("ransac detect fit plane sphere cylinder primitive segment");
             Description = new LocalizableString(
                 "Detect multiple primitives (planes, spheres, cylinders) in a point cloud with efficient RANSAC. "

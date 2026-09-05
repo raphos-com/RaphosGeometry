@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Remeshing
             : base(new LocalizableString("Quadric Decimate"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Remeshing;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("decimate simplify qem qslim reduce lod");
             Description = new LocalizableString(
                 "Reduce a triangle mesh to a target face count using QEM edge-collapse decimation (QSlim).");

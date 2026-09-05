@@ -17,7 +17,7 @@ namespace Raphos.Geometry.Components.Remeshing
             : base(new LocalizableString("Make Consistent"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Remeshing;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("orient consistent normals flip winding coherent");
             Description = new LocalizableString(
                 "Coherently reorient the facets of a triangle mesh so neighbouring triangles wind the same way.");

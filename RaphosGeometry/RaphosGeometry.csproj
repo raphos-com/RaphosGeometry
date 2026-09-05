@@ -98,12 +98,16 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Copy per-node icons and help example graphs next to the assembly. -->
+  <!-- Copy per-node icons and help example graphs next to the assembly. The target Icons/Help
+       trees are cleared first: Copy only ever adds, so a subcategory that is renamed or removed
+       (as when the six subcategories were merged into three) would otherwise leave its old folder
+       behind in both the deployed add-in and the packaged .synaddin. -->
   <Target Name="CopyIconsAndHelpFiles" AfterTargets="Build">
     <ItemGroup>
       <Icons Include="$(ProjectDir)Icons/**/*" />
       <Help Include="$(ProjectDir)Help/**/*" />
     </ItemGroup>
+    <RemoveDir Directories="$(TargetDir)Icons;$(TargetDir)Help" />
     <Copy SourceFiles="@(Icons)" DestinationFolder="$(TargetDir)Icons/%(Icons.RecursiveDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(Help)" DestinationFolder="$(TargetDir)Help/%(Help.RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>

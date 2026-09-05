@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Remeshing
             : base(new LocalizableString("Fill Holes"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Remeshing;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("hole fill close watertight patch boundary");
             Description = new LocalizableString(
                 "Fill boundary holes in a triangle mesh. A maximum hole area of 0 fills every hole.");

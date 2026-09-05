@@ -18,7 +18,7 @@ namespace Raphos.Geometry.Components.Remeshing
             : base(new LocalizableString("Alpha Wrap"))
         {
             Category = Shared.RaphosGeometryCategory;
-            Subcategory = Shared.Remeshing;
+            Subcategory = Shared.Mesh;
             Keywords = new LocalizableString("alpha wrap shrinkwrap watertight envelope offset repair hull");
             Description = new LocalizableString(
                 "Produce a watertight shrink-wrap of a messy or open mesh by sampling a signed-distance field "
