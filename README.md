@@ -93,12 +93,30 @@ The palette category **Raphos Geometry** has three subcategories, kept few so th
 
 ### Examples
 
-Each node ships a runnable end-to-end `.syn` example under `Help/`. Every example is a real working
-graph: two text annotations label it — the node name (large) and a **description paragraph** (default
-size, taken from the node's own description) — the geometry is loaded via a **relative-path import**
-(`RelativeFilePathContainer` → `ImportStl`, with the mesh file placed next to each `.syn` so paths stay
-relative and portable), and constant parameters (scalars, points, plane, grid) are **internalized on
-the node inputs** so they align on every data path and carry the intended value.
+Each node ships a runnable end-to-end `.syn` example under `Help/`, built to be read by a novice: it
+shows the node **working** on the dodo and **visualizes its output**, so you can see what the node does
+rather than just wire it up. Every example has two annotations — the node name (large) and a
+**description paragraph** (default size, from the node's own description); the geometry is loaded via a
+**relative-path import** (`RelativeFilePathContainer` → `ImportStl`, the mesh file placed next to each
+`.syn`); every **scalar parameter is a number slider** (tunable, not hardcoded); and point/plane/grid
+constants are internalized on the node inputs.
+
+The output is visualized per result type:
+- **result mesh / point cloud** (decimate, fill holes, repair, remesh, clip, marching cubes, ARAP
+  deform, reconstruction, denoise/simplify): previewed directly.
+- **per-vertex scalar field** (geodesic distance, curvature, harmonics, SDF, biharmonic weights,
+  winding number): colors the mesh through `Bounding Interval → Remap → Construct/Evaluate Color Map
+  → Mesh Colors`.
+- **direction / normal field** (curvature principal directions, estimated/oriented normals): drawn as
+  line segments with `Line SDL` — for curvature, the length is the principal curvature, so the lines
+  are proportional to it.
+- **UV unwrap** (LSCM / Harmonic / ARAP / atlas): rebuilt into a flat mesh (`Construct Mesh` from the
+  UV points + the original faces) so you see the layout.
+
+A caveat: `RANSAC`, `Region Growing` and `Vector Heat` read the whole surface into a field that is
+degenerate on an organic closed model (single-segment labels, a near-normal transport direction), so
+those three examples show the input and leave the result on the node's output port rather than forcing
+an empty/uniform overlay.
 
 Geometry is a real **3D dodo model** (from `raphos-website/artifacts/dodo`, in `_material/dodo`).
 `ImportGeometryAsMesh` is Parasolid-based and does **not** read `.obj`, so the dodo is provided as
