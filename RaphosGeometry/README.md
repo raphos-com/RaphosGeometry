@@ -157,3 +157,14 @@ All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe e
 - Poisson uses Geogram's bundled Kazhdan `PoissonRecon` (no first-class wrapper header).
 - Alpha Shape tetrahedralizes with Geogram's `Delaunay` (exact predicates, near-linear) and keeps the
   boundary faces of the tetrahedra whose circumradius is below alpha — instant even on the full cloud.
+
+### Known node bugs (found while auditing the examples — need native fixes)
+- **Fill Holes** never fills a hole: it is a no-op at every `Max Hole Area` (0 and large alike) on a
+  mesh with clean boundary holes, and it *crashes* on a mesh with ragged boundaries. Its example
+  therefore stays on the clean dodo (nothing to fill) until the node is fixed. (Also: the `.cs`
+  description claiming "a maximum hole area of 0 fills every hole" is backwards — 0 fills nothing.)
+- **Repair Mesh** crashes (native, no error) on any mesh that actually contains duplicate or degenerate
+  faces — the very defects it exists to remove — so it can only run on already-clean input. Its example
+  stays on the clean dodo.
+- Remove Self-Intersections (verified: 2 interpenetrating boxes → 24 → 72 tris) and Remove Outliers
+  (fed a cloud with scattered flyers) DO work on defective input and are demonstrated on it.
