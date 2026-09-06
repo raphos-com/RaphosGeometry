@@ -110,9 +110,13 @@ The output is visualized per result type:
 - **direction / normal field** (curvature principal directions, estimated/oriented normals): drawn as
   line segments with `Line SDL` — for curvature, the length is the principal curvature, so the lines
   are proportional to it.
-- **UV unwrap** (LSCM / Harmonic / ARAP): rebuilt into a flat mesh (`Construct Mesh` from the
-  per-vertex UV points + the original faces) so you see the layout. Auto UV Atlas emits one UV per
-  face-corner (not per vertex), so its packed charts are shown as a point scatter instead.
+- **UV unwrap** (LSCM / Harmonic / ARAP): shown as a comprehensive *why-UV-matters* demo. A geodesic
+  field is painted on the 3D surface, and the **same field** is shown on both the 3D mesh and its
+  flattened unwrap (`Construct Mesh` from the per-vertex UVs + the original faces, coloured by the
+  field). Identical patterns on both = the bijective 3D↔2D map that lets you paint/bake a texture in
+  2D and have it wrap onto the model. The flat map sits at z=0 below the 3D patch, so both are visible.
+- **Auto UV Atlas** emits one UV per face-corner (three per triangle, not per vertex), so it shows the
+  source mesh together with the packed UV islands (the atlas you would bake a texture into).
 
 Geometry is a real **3D dodo model** (from `raphos-website/artifacts/dodo`, in `_material/dodo`).
 `ImportGeometryAsMesh` is Parasolid-based and does **not** read `.obj`, so the dodo is provided as
