@@ -126,10 +126,8 @@ topologically clean meshes (also in `_material/dodo`):
 - **`dodo_clean.stl`** — a **genus-0 watertight dodo**, still recognisably the dodo. Made from
   `dodo_full.stl` by this add-in's own **Alpha Wrap** node (signed-distance field on a 160³ grid →
   isosurface, i.e. a marching-cubes shrink-wrap) then **Quadric Decimate** to ~6k triangles → ARAP
-  deformation, biharmonic weights, heat/exact geodesics, geodesic path, vector heat, winding number,
-  curvature tensor.
-- **`dodo_coarse.stl`** — the same wrap decimated to ~1.4k triangles → Manifold Harmonics only (its
-  eigensolver is ~O(verts³): 76 s on 3k vertices, ~1 s on 700).
+  deformation, biharmonic weights, heat/exact geodesics, geodesic path, vector heat, manifold
+  harmonics, winding number, curvature tensor.
 - **`dodo_disk.stl`** — the clean dodo clipped by a horizontal plane (legs removed, via this add-in's
   own Clip Mesh by Plane node) → an on-brand open disk (one boundary loop) for the UV unwraps.
 - **`torus.stl`** — a clean genus-1 tube → mean-curvature skeleton (it contracts to the centre circle).
@@ -149,6 +147,8 @@ All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe e
 ### Notes on library gaps found
 - Manifold Harmonics: Geogram's spectral solver needs OpenNL's ARPACK extension (absent from the
   prebuilt `geogram.lib`), so it is reimplemented with libigl's cotangent Laplacian + Voronoi mass
-  matrix and a dense Eigen generalized eigensolver (fine for small/medium meshes).
+  matrix. It solves the k smallest eigenpairs with **geometry-central's sparse inverse-power-iteration
+  solver** (`smallestKEigenvectorsPositiveDefinite`, ~O(k·nnz) with one sparse factorization) rather
+  than a dense Eigen eigensolver — ~0.3 s vs ~76 s on the 3k-vertex dodo, so it runs on full-res meshes.
 - QEM decimation uses libigl `qslim` (Geogram only offers vertex-clustering).
 - Poisson uses Geogram's bundled Kazhdan `PoissonRecon` (no first-class wrapper header).
