@@ -158,13 +158,20 @@ All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe e
 - Alpha Shape tetrahedralizes with Geogram's `Delaunay` (exact predicates, near-linear) and keeps the
   boundary faces of the tetrahedra whose circumradius is below alpha — instant even on the full cloud.
 
-### Known node bugs (found while auditing the examples — need native fixes)
-- **Fill Holes** never fills a hole: it is a no-op at every `Max Hole Area` (0 and large alike) on a
-  mesh with clean boundary holes, and it *crashes* on a mesh with ragged boundaries. Its example
-  therefore stays on the clean dodo (nothing to fill) until the node is fixed. (Also: the `.cs`
-  description claiming "a maximum hole area of 0 fills every hole" is backwards — 0 fills nothing.)
-- **Repair Mesh** crashes (native, no error) on any mesh that actually contains duplicate or degenerate
-  faces — the very defects it exists to remove — so it can only run on already-clean input. Its example
-  stays on the clean dodo.
-- Remove Self-Intersections (verified: 2 interpenetrating boxes → 24 → 72 tris) and Remove Outliers
-  (fed a cloud with scattered flyers) DO work on defective input and are demonstrated on it.
+### Repair / cleanup examples run on a defective input (so the effect is real, not a no-op)
+These nodes do nothing on an already-clean mesh, so each is fed the specific defect it fixes, and all
+were verified to actually change the geometry:
+- **Fill Holes** → `dodo_holed.stl` (dodo with 12 small holes) → **watertight** output (12 boundary
+  loops → 0). The native node is fine; an earlier no-op was a generator bug (the "Max Hole Edges = 0
+  means no limit" input was being clamped to 1, so only ≤1-edge holes were considered).
+- **Remove Self-Intersections** → `selfx.stl` (two interpenetrating boxes) → resolved (24 → 72 tris).
+- **Repair Mesh** → `messy.stl` (clean dodo + 30 duplicate + 20 degenerate faces) → cleaned (6050 →
+  6000 faces).
+- **Remove Outliers** → a cloud of clean points + 30 scattered flyer outliers → flyers removed.
+- **Make Consistent** → `dodo_flipped.stl` (clean dodo with ~40% of faces reversed) → coherently
+  re-oriented (verified: a valid closed manifold out).
+- **Bilateral Denoise** → a noisy blob cloud (points jittered along their normals) + the true normals
+  → points pulled back onto the smooth surface.
+- **WLOP Consolidate** → the same noisy cloud → denoised and evenly redistributed.
+- **Orient Normals** → a clean blob cloud + **random-signed** normals → all flipped to point
+  consistently outward (drawn as arrows at the cloud points).
