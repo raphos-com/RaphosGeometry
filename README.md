@@ -130,8 +130,8 @@ topologically clean meshes (also in `_material/dodo`):
   curvature tensor.
 - **`dodo_coarse.stl`** — the same wrap decimated to ~1.4k triangles → Manifold Harmonics only (its
   eigensolver is ~O(verts³): 76 s on 3k vertices, ~1 s on 700).
-- **`patch.stl`** — a clean curved topological disk (one boundary loop) → the UV unwraps, which need
-  an open disk.
+- **`dodo_disk.stl`** — the clean dodo clipped by a horizontal plane (legs removed, via this add-in's
+  own Clip Mesh by Plane node) → an on-brand open disk (one boundary loop) for the UV unwraps.
 - **`torus.stl`** — a clean genus-1 tube → mean-curvature skeleton (it contracts to the centre circle).
 - **`slice.stl`** — a vertical plane through the standing dodo → winding number samples it, colouring
   each point inside (≈1) / outside (≈0) so you see the dodo's cross-section profile.
