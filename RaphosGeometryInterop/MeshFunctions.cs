@@ -117,26 +117,64 @@ namespace Raphos.Geometry.Interop
             }
         }
 
-        /// <summary>Fill boundary holes (Geogram). maxHoleArea 0 = fill all.</summary>
-        public static (Point3D[] points, MeshFace[] faces) FillHoles(IList<Point3D> verts, IList<MeshFace> faces, double maxHoleArea, int maxHoleEdges)
+        /// <summary>
+        /// Fill boundary holes (Geogram). maxHoleArea 0 = fill all. Returns the repaired mesh
+        /// plus the patch generated for each hole as its own mesh (one entry per filled hole).
+        /// </summary>
+        public static (Point3D[] points, MeshFace[] faces, List<(Point3D[] points, MeshFace[] faces)> patches)
+            FillHoles(IList<Point3D> verts, IList<MeshFace> faces, double maxHoleArea, int maxHoleEdges)
         {
             ArrayUtils.ArrayFromPoints(verts, out IntPtr vPtr, out _);
             ArrayUtils.ArrayFromTriFaces(faces, out IntPtr fPtr, out _);
             IntPtr oV = IntPtr.Zero, oF = IntPtr.Zero;
-            GCHandle hV = default, hF = default;
+            IntPtr oPVC = IntPtr.Zero, oPFC = IntPtr.Zero, oPV = IntPtr.Zero, oPF = IntPtr.Zero;
+            GCHandle hV = default, hF = default, hPVC = default, hPFC = default, hPV = default, hPF = default;
             try
             {
                 UnsafeNativeMethods.FillHoles(vPtr, verts.Count, fPtr, faces.Count, maxHoleArea, maxHoleEdges,
-                    out oV, out long onv, out oF, out long onf);
+                    out oV, out long onv, out oF, out long onf,
+                    out long onPatch, out oPVC, out oPFC, out oPV, out long oPVtotal, out oPF, out long oPFtotal);
                 hV = GCHandle.Alloc(oV, GCHandleType.Pinned);
                 hF = GCHandle.Alloc(oF, GCHandleType.Pinned);
-                return (ReadPoints(oV, onv), ReadFaces(oF, onf));
+                hPVC = GCHandle.Alloc(oPVC, GCHandleType.Pinned);
+                hPFC = GCHandle.Alloc(oPFC, GCHandleType.Pinned);
+                hPV = GCHandle.Alloc(oPV, GCHandleType.Pinned);
+                hPF = GCHandle.Alloc(oPF, GCHandleType.Pinned);
+
+                Point3D[] outPts = ReadPoints(oV, onv);
+                MeshFace[] outFaces = ReadFaces(oF, onf);
+
+                long[] patchVCount = ReadLongs(oPVC, onPatch);
+                long[] patchFCount = ReadLongs(oPFC, onPatch);
+                Point3D[] allPatchPts = ReadPoints(oPV, oPVtotal);
+                MeshFace[] allPatchFaces = ReadFaces(oPF, oPFtotal);
+
+                // Patch faces are already indexed locally within each patch, so slicing by the
+                // per-patch counts is enough (no index rebasing needed).
+                var patches = new List<(Point3D[] points, MeshFace[] faces)>((int)onPatch);
+                long vBase = 0, fBase = 0;
+                for (long i = 0; i < onPatch; i++)
+                {
+                    int vc = (int)patchVCount[i], fc = (int)patchFCount[i];
+                    var pPts = new Point3D[vc];
+                    Array.Copy(allPatchPts, vBase, pPts, 0, vc);
+                    var pFaces = new MeshFace[fc];
+                    Array.Copy(allPatchFaces, fBase, pFaces, 0, fc);
+                    patches.Add((pPts, pFaces));
+                    vBase += vc; fBase += fc;
+                }
+
+                return (outPts, outFaces, patches);
             }
             finally
             {
                 FreeInput(vPtr); FreeInput(fPtr);
                 ReleaseDoubles(oV, ref hV);
                 ReleaseLongs(oF, ref hF);
+                ReleaseLongs(oPVC, ref hPVC);
+                ReleaseLongs(oPFC, ref hPFC);
+                ReleaseDoubles(oPV, ref hPV);
+                ReleaseLongs(oPF, ref hPF);
             }
         }
 

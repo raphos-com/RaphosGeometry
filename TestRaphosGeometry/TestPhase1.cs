@@ -57,9 +57,13 @@ namespace TestRaphosGeometry
             MeshFace[] holed = f.Take(f.Length - 12).ToArray();
             Assert.IsTrue(BoundaryEdges(holed) > 0, "test setup: mesh should be open");
 
-            (Point3D[] ov, MeshFace[] of) = MeshFunctions.FillHoles(v, holed, 0.0, 0);
+            (Point3D[] ov, MeshFace[] of, var patches) = MeshFunctions.FillHoles(v, holed, 0.0, 0);
             Assert.IsTrue(of.Length >= holed.Length, "fill holes should not remove faces");
             Assert.AreEqual(0, BoundaryEdges(of), "mesh should be closed after filling all holes");
+            Assert.IsTrue(patches.Count >= 1, "at least one hole patch should be reported");
+            Assert.IsTrue(patches.All(p => p.faces.Length > 0), "each patch should have faces");
+            Assert.AreEqual(of.Length - holed.Length, patches.Sum(p => p.faces.Length),
+                "patch faces should account for exactly the facets added by filling");
         }
 
         [TestMethod]

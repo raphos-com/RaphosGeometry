@@ -36,6 +36,12 @@ namespace Raphos.Geometry.Components.Parameterization
                 new LocalizableString("UV"),
                 new LocalizableString("UV per face-corner as an XY-plane point (3 per triangle, in face order)."),
                 ParameterAccess.List);
+            OutputParameterManager.AddParameter<IMesh>(
+                new LocalizableString("Atlas Mesh"),
+                new LocalizableString(
+                    "The packed UV atlas as a flat mesh in the XY plane: preview it to see the charts "
+                    + "you would bake a texture into. Same triangles as the input, laid out in 2D."),
+                ParameterAccess.Item);
         }
 
         protected override void SolveInstance(IDataAccess dataAccess)
@@ -52,7 +58,15 @@ namespace Raphos.Geometry.Components.Parameterization
                 AddWarning("The atlas produced no UVs.");
                 return;
             }
-            dataAccess.SetListData(0, uv.Select(p => new Point3D(p.u, p.v, 0)).ToArray());
+            Point3D[] uvPts = uv.Select(p => new Point3D(p.u, p.v, 0)).ToArray();
+            dataAccess.SetListData(0, uvPts);
+
+            // The UVs are one point per face-corner in face order, so consecutive triples are
+            // exactly the triangles: rebuild the packed atlas as a flat mesh you can preview.
+            var atlasFaces = new MeshFace[uvPts.Length / 3];
+            for (int i = 0; i < atlasFaces.Length; i++)
+                atlasFaces[i] = new MeshFace(i * 3, i * 3 + 1, i * 3 + 2);
+            dataAccess.SetData(1, MeshKernel.CreateFromVerticesAndFaces(uvPts, atlasFaces));
         }
     }
 }

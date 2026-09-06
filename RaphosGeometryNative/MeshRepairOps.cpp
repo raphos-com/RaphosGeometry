@@ -1,6 +1,8 @@
 #include "MeshRepairOps.h"
 #include "GeoMeshUtils.h"
 #include <geogram/basic/common.h>
+#include <geogram/basic/command_line.h>
+#include <geogram/basic/command_line_args.h>
 #include <geogram/mesh/mesh_repair.h>
 #include <geogram/mesh/mesh_surface_intersection.h>
 
@@ -12,6 +14,10 @@ int RepairMesh(
 ) {
     using namespace GEO;
     initialize();
+    // Re-triangulation inside mesh_repair reads algorithm CmdLine variables; import the arg
+    // groups that declare them, otherwise geogram asserts "variable_exists".
+    CmdLine::import_arg_group("standard");
+    CmdLine::import_arg_group("algo");
 
     Mesh M;
     RaphosGeo::BuildGeoMesh(pnts, nv, faces, nf, M);

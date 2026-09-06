@@ -115,8 +115,18 @@ The output is visualized per result type:
   flattened unwrap (`Construct Mesh` from the per-vertex UVs + the original faces, coloured by the
   field). Identical patterns on both = the bijective 3D↔2D map that lets you paint/bake a texture in
   2D and have it wrap onto the model. The flat map sits at z=0 below the 3D patch, so both are visible.
-- **Auto UV Atlas** emits one UV per face-corner (three per triangle, not per vertex), so it shows the
-  source mesh together with the packed UV islands (the atlas you would bake a texture into).
+- **Auto UV Atlas** emits one UV per face-corner (three per triangle, not per vertex). A raw UV list is
+  hard to read, so the node also outputs an **Atlas Mesh** — the packed charts rebuilt as a flat 2D
+  mesh — and the example previews that beside the 3D model (the atlas you would bake a texture into).
+- **Fill Holes** also returns each hole's patch as its own mesh (**Patches**) plus the number of holes
+  filled (**Filled**): the example previews the patches to highlight exactly what was added, and shows
+  the count in a panel.
+- **ARAP Deformation** is interactive: one handle is pinned to the dodo's head and its target position
+  is built from three **Target X/Y/Z** sliders, so you can drag the head and watch the body follow.
+- **Repair Mesh** / **Make Consistent** direct the eye to what actually changed. Repair Mesh runs on
+  `messy.stl` and shows the triangle count **before and after** in two panels (bad faces removed).
+  Make Consistent runs on `dodo_flipped.stl` and draws the per-vertex normals as arrows **before**
+  (stabbing inward in the flipped patches) and **after** (all pointing cleanly outward).
 
 Geometry is a real **3D dodo model** (from `raphos-website/artifacts/dodo`, in `_material/dodo`).
 `ImportGeometryAsMesh` is Parasolid-based and does **not** read `.obj`, so the dodo is provided as
@@ -165,8 +175,11 @@ were verified to actually change the geometry:
   loops → 0). The native node is fine; an earlier no-op was a generator bug (the "Max Hole Edges = 0
   means no limit" input was being clamped to 1, so only ≤1-edge holes were considered).
 - **Remove Self-Intersections** → `selfx.stl` (two interpenetrating boxes) → resolved (24 → 72 tris).
-- **Repair Mesh** → `messy.stl` (clean dodo + 30 duplicate + 20 degenerate faces) → cleaned (6050 →
-  6000 faces).
+- **Repair Mesh** → `messy.stl` (clean dodo + 30 duplicate + 20 degenerate faces) → cleaned. The
+  example shows the triangle count before and after in two panels. (Bug fixed: with *Triangulate* on,
+  the native call asserted `variable_exists` inside Geogram — its re-triangulation reads algorithm
+  CmdLine variables whose arg groups were never imported — so the node threw "External component has
+  thrown an exception" and produced nothing. Now imports `standard`+`algo` arg groups, like Fill Holes.)
 - **Remove Outliers** → a cloud of clean points + 30 scattered flyer outliers → flyers removed.
 - **Make Consistent** → `dodo_flipped.stl` (clean dodo with ~40% of faces reversed) → coherently
   re-oriented (verified: a valid closed manifold out).

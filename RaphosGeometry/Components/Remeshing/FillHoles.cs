@@ -39,6 +39,14 @@ namespace Raphos.Geometry.Components.Remeshing
                 new LocalizableString("Mesh"),
                 new LocalizableString("Mesh with holes filled."),
                 ParameterAccess.Item);
+            OutputParameterManager.AddParameter<IMesh>(
+                new LocalizableString("Patches"),
+                new LocalizableString("The patch mesh generated for each filled hole (one mesh per hole)."),
+                ParameterAccess.List);
+            OutputParameterManager.AddParameter<SyneraInt>(
+                new LocalizableString("Filled"),
+                new LocalizableString("Number of holes that were filled."),
+                ParameterAccess.Item);
         }
 
         protected override void SolveInstance(IDataAccess dataAccess)
@@ -54,11 +62,18 @@ namespace Raphos.Geometry.Components.Remeshing
                 return;
             }
 
-            (Point3D[] points, MeshFace[] faces) = MeshFunctions.FillHoles(m.Vertices.ToList(), m.Faces.ToList(), maxArea, maxEdges);
+            (Point3D[] points, MeshFace[] faces, var patchData) = MeshFunctions.FillHoles(m.Vertices.ToList(), m.Faces.ToList(), maxArea, maxEdges);
             IMesh result = MeshKernel.CreateFromVerticesAndFaces(points, faces);
             if (!result.IsClosed)
                 AddWarning("The result is still not closed; some holes exceeded the area/edge limits.");
+
+            var patches = patchData
+                .Select(p => MeshKernel.CreateFromVerticesAndFaces(p.points, p.faces))
+                .ToList();
+
             dataAccess.SetData(0, result);
+            dataAccess.SetListData(1, patches);
+            dataAccess.SetData(2, patches.Count);
         }
     }
 }
