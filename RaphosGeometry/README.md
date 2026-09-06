@@ -110,28 +110,34 @@ The output is visualized per result type:
 - **direction / normal field** (curvature principal directions, estimated/oriented normals): drawn as
   line segments with `Line SDL` — for curvature, the length is the principal curvature, so the lines
   are proportional to it.
-- **UV unwrap** (LSCM / Harmonic / ARAP / atlas): rebuilt into a flat mesh (`Construct Mesh` from the
-  UV points + the original faces) so you see the layout.
-
-A few algorithms are shown on the mesh they are actually defined for, rather than forced onto the
-organic dodo (where their field is degenerate): UV unwrap on an open patch (`dodo_open.stl`), Curvature
-Tensor / Jet Ridges on the clean full-res mesh (`dodo_full.stl`), Geodesic Path and Vector Heat on an
-**icosphere** (`ico.stl`), Biharmonic Weights on a flat **grid** (`grid.stl`), and RANSAC / Region
-Growing on a subdivided **cube** (`planes.stl`) whose six planes give several colored segments.
+- **UV unwrap** (LSCM / Harmonic / ARAP): rebuilt into a flat mesh (`Construct Mesh` from the
+  per-vertex UV points + the original faces) so you see the layout. Auto UV Atlas emits one UV per
+  face-corner (not per vertex), so its packed charts are shown as a point scatter instead.
 
 Geometry is a real **3D dodo model** (from `raphos-website/artifacts/dodo`, in `_material/dodo`).
 `ImportGeometryAsMesh` is Parasolid-based and does **not** read `.obj`, so the dodo is provided as
-**STL** (Synera's native triangle-mesh format, read by `ImportStl`). Most nodes use `dodo.stl` — a
-clean ~3k-triangle decimation produced by this add-in's own Quadric Decimate node from the full-res
-original (a naive cluster decimation left non-manifold slivers that crash libigl/geometry-central).
-A few algorithms are demonstrated on the mesh type they are actually defined for — as each one's unit
-test does — rather than forced onto a closed organic model:
-- UV unwrap (LSCM / Harmonic / ARAP) need an **open** mesh → `dodo_open.stl` (the dodo with its
-  bottom cap removed, giving a boundary).
-- Curvature Tensor's libigl quadric fit is sensitive to decimation artifacts → the clean full-res
-  `dodo_full.stl`.
-- Geodesic Path (FlipOut) → an **icosphere** (`ico.stl`); Biharmonic Weights → a flat **grid**
-  (`grid.stl`) with corner handles.
+**STL** (Synera's native triangle-mesh format, read by `ImportStl`). Per-vertex / per-face /
+point-cloud nodes use `dodo.stl` (a ~3k-triangle decimation).
+
+The raw dodo is a decimated **multi-part scan — 46 disconnected shells** — which is fine for those
+nodes but breaks any solver that needs a single manifold or a disk (deformation, parameterization,
+geodesics, spectral analysis and weights all fail or mislead on it). Those nodes are shown on small,
+topologically clean, purpose-built meshes (also in `_material/dodo`):
+- **`blob.stl`** — a clean closed single-component genus-0 manifold (a displaced icosphere) → ARAP
+  deformation, biharmonic weights, heat/exact geodesics, geodesic path, vector heat, manifold
+  harmonics, winding number, curvature tensor.
+- **`patch.stl`** — a clean curved topological disk (one boundary loop) → the UV unwraps, which need
+  an open disk.
+- **`torus.stl`** — a clean genus-1 tube → mean-curvature skeleton (it contracts to the centre circle).
+- **`slice.stl`** — a flat grid through the origin → winding number samples it as a cross-section,
+  colouring each grid point inside (≈1) / outside (≈0) the blob.
+- **`planes.stl`** — a subdivided cube whose six planes give RANSAC / Region Growing several segments.
+- **`dodo_full.stl`** — the full-res dodo, the second mesh in the Hausdorff example (nominal vs decimated).
+
+Handle placement matters: ARAP snaps handles to the nearest surface vertex, but biharmonic weights'
+`igl::boundary_conditions` only registers a handle within ~bbox·1e-3 of an actual vertex, so its two
+handles are exact blob vertices. Alpha Shape uses a naive O(n²) tetrahedralizer, so it runs on a
+random ~300-vertex subset of the blob.
 
 All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe execute`).
 
