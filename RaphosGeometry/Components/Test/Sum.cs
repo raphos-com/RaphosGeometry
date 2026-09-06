@@ -1,4 +1,4 @@
-#if DEBUG
+#if !RELEASE
 using Raphos.Geometry.Components;
 using Raphos.Geometry.Interop;
 using Synera.Core.Graph.Data;
