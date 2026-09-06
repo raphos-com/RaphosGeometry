@@ -122,21 +122,26 @@ point-cloud nodes use `dodo.stl` (a ~3k-triangle decimation).
 The raw dodo is a decimated **multi-part scan — 46 disconnected shells** — which is fine for those
 nodes but breaks any solver that needs a single manifold or a disk (deformation, parameterization,
 geodesics, spectral analysis and weights all fail or mislead on it). Those nodes are shown on small,
-topologically clean, purpose-built meshes (also in `_material/dodo`):
-- **`blob.stl`** — a clean closed single-component genus-0 manifold (a displaced icosphere) → ARAP
-  deformation, biharmonic weights, heat/exact geodesics, geodesic path, vector heat, manifold
-  harmonics, winding number, curvature tensor.
+topologically clean meshes (also in `_material/dodo`):
+- **`dodo_clean.stl`** — a **genus-0 watertight dodo**, still recognisably the dodo. Made from
+  `dodo_full.stl` by this add-in's own **Alpha Wrap** node (signed-distance field on a 160³ grid →
+  isosurface, i.e. a marching-cubes shrink-wrap) then **Quadric Decimate** to ~6k triangles → ARAP
+  deformation, biharmonic weights, heat/exact geodesics, geodesic path, vector heat, winding number,
+  curvature tensor.
+- **`dodo_coarse.stl`** — the same wrap decimated to ~1.4k triangles → Manifold Harmonics only (its
+  eigensolver is ~O(verts³): 76 s on 3k vertices, ~1 s on 700).
 - **`patch.stl`** — a clean curved topological disk (one boundary loop) → the UV unwraps, which need
   an open disk.
 - **`torus.stl`** — a clean genus-1 tube → mean-curvature skeleton (it contracts to the centre circle).
-- **`slice.stl`** — a flat grid through the origin → winding number samples it as a cross-section,
-  colouring each grid point inside (≈1) / outside (≈0) the blob.
+- **`slice.stl`** — a vertical plane through the standing dodo → winding number samples it, colouring
+  each point inside (≈1) / outside (≈0) so you see the dodo's cross-section profile.
 - **`planes.stl`** — a subdivided cube whose six planes give RANSAC / Region Growing several segments.
+- **`blob.stl`** — a small clean convex-ish cloud → Alpha Shape's point set.
 - **`dodo_full.stl`** — the full-res dodo, the second mesh in the Hausdorff example (nominal vs decimated).
 
 Handle placement matters: ARAP snaps handles to the nearest surface vertex, but biharmonic weights'
 `igl::boundary_conditions` only registers a handle within ~bbox·1e-3 of an actual vertex, so its two
-handles are exact blob vertices. Alpha Shape uses a naive O(n²) tetrahedralizer, so it runs on a
+handles are exact `dodo_clean` vertices (head and feet). Alpha Shape uses a naive O(n²) tetrahedralizer, so it runs on a
 random ~300-vertex subset of the blob.
 
 All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe execute`).
