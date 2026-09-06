@@ -1,4 +1,8 @@
 #include "AlphaShape.h"
+#include <geogram/basic/common.h>
+#include <geogram/basic/command_line.h>
+#include <geogram/basic/command_line_args.h>
+#include <geogram/delaunay/delaunay.h>
 #include <vector>
 #include <array>
 #include <cmath>
@@ -181,110 +185,26 @@ private:
     void computeDelaunayTetrahedralization() {
         if (points.size() < 4) return;
 
-        // Find bounding box
-        Point3D<T> min_pt(std::numeric_limits<T>::max(),
-            std::numeric_limits<T>::max(),
-            std::numeric_limits<T>::max());
-        Point3D<T> max_pt(std::numeric_limits<T>::lowest(),
-            std::numeric_limits<T>::lowest(),
-            std::numeric_limits<T>::lowest());
+        // Delaunay tetrahedralization via Geogram (near-linear, exact predicates) instead of a naive
+        // O(n^2) Bowyer-Watson insertion. Point3D<double> is {x,y,z} contiguous, so the points vector
+        // is already an xyzxyz double array Geogram can consume directly. Cells are finite tetrahedra
+        // indexing into `points`; the alpha filter + boundary-face extraction below are unchanged.
+        GEO::initialize();
+        GEO::CmdLine::import_arg_group("algo");
+        GEO::Delaunay_var delaunay = GEO::Delaunay::create(3, "BDEL");
+        delaunay->set_vertices((GEO::index_t)points.size(), &points[0].x);
 
-        for (const auto& p : points) {
-            min_pt.x = std::min(min_pt.x, p.x);
-            min_pt.y = std::min(min_pt.y, p.y);
-            min_pt.z = std::min(min_pt.z, p.z);
-            max_pt.x = std::max(max_pt.x, p.x);
-            max_pt.y = std::max(max_pt.y, p.y);
-            max_pt.z = std::max(max_pt.z, p.z);
-        }
-
-        // Calculate bounding box size and expansion factor
-        T dx = max_pt.x - min_pt.x;
-        T dy = max_pt.y - min_pt.y;
-        T dz = max_pt.z - min_pt.z;
-        T max_size = std::max({ dx, dy, dz });
-        T expansion = max_size * T(10);
-
-        // Create super-tetrahedron vertices
-        size_t base_idx = points.size();
-        points.push_back(Point3D<T>(min_pt.x - expansion, min_pt.y - expansion, min_pt.z - expansion));
-        points.push_back(Point3D<T>(max_pt.x + expansion, min_pt.y - expansion, min_pt.z - expansion));
-        points.push_back(Point3D<T>((min_pt.x + max_pt.x) / 2, max_pt.y + expansion, min_pt.z - expansion));
-        points.push_back(Point3D<T>((min_pt.x + max_pt.x) / 2, (min_pt.y + max_pt.y) / 2, max_pt.z + expansion));
-
-        // Initialize with super-tetrahedron
         tetrahedra.clear();
-        Tetrahedron super_tetra(base_idx, base_idx + 1, base_idx + 2, base_idx + 3);
-        if (computeCircumsphere(super_tetra)) {
-            tetrahedra.push_back(super_tetra);
+        tetrahedra.reserve(delaunay->nb_cells());
+        for (GEO::index_t c = 0; c < delaunay->nb_cells(); ++c) {
+            GEO::signed_index_t a = delaunay->cell_vertex(c, 0);
+            GEO::signed_index_t b = delaunay->cell_vertex(c, 1);
+            GEO::signed_index_t d = delaunay->cell_vertex(c, 2);
+            GEO::signed_index_t e = delaunay->cell_vertex(c, 3);
+            if (a < 0 || b < 0 || d < 0 || e < 0) continue;   // skip any infinite cell
+            Tetrahedron tetra((size_t)a, (size_t)b, (size_t)d, (size_t)e);
+            if (computeCircumsphere(tetra)) tetrahedra.push_back(tetra);
         }
-
-        // Process points
-        std::vector<size_t> point_indices(base_idx);
-        std::iota(point_indices.begin(), point_indices.end(), 0);
-        //std::random_shuffle(point_indices.begin(), point_indices.end());  // Randomize insertion order
-
-        for (size_t idx : point_indices) {
-            std::vector<Tetrahedron> new_tetrahedra;
-            std::unordered_map<Triangle<T>, int, TriangleHash<T>> triangle_count;
-
-            // Find affected tetrahedra
-            for (const auto& tetra : tetrahedra) {
-                if (!tetra.isValid) continue;
-
-                const Point3D<T>& point = points[idx];
-                T dist = point.distanceTo(tetra.circumCenter);
-
-                if (dist <= tetra.circumRadius * (1 + EPSILON)) {
-                    // Add triangular faces
-                    for (int j = 0; j < 4; ++j) {
-                        std::array<size_t, 3> face_verts = {
-                            tetra.vertices[j],
-                            tetra.vertices[(j + 1) % 4],
-                            tetra.vertices[(j + 2) % 4]
-                        };
-                        Triangle<T> tri(face_verts[0], face_verts[1], face_verts[2], &points);
-                        triangle_count[tri]++;
-                    }
-                }
-                else {
-                    new_tetrahedra.push_back(tetra);
-                }
-            }
-
-            // Create new tetrahedra
-            for (const auto& pair : triangle_count) {
-                if (pair.second == 1) {  // Face appears only once -> it's on the boundary
-                    Tetrahedron new_tetra(
-                        pair.first.vertices[0],
-                        pair.first.vertices[1],
-                        pair.first.vertices[2],
-                        idx
-                    );
-                    if (computeCircumsphere(new_tetra)) {
-                        new_tetrahedra.push_back(new_tetra);
-                    }
-                }
-            }
-
-            tetrahedra = std::move(new_tetrahedra);
-        }
-
-        // Remove tetrahedra connected to super-tetrahedron vertices
-        tetrahedra.erase(
-            std::remove_if(tetrahedra.begin(), tetrahedra.end(),
-                [&](const Tetrahedron& t) {
-            return t.vertices[0] >= base_idx ||
-                t.vertices[1] >= base_idx ||
-                t.vertices[2] >= base_idx ||
-                t.vertices[3] >= base_idx;
-        }
-            ),
-            tetrahedra.end()
-        );
-
-        // Remove super-tetrahedron vertices
-        points.resize(base_idx);
     }
 
     void extractAlphaShape() {

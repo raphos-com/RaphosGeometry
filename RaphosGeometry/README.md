@@ -139,8 +139,7 @@ topologically clean meshes (also in `_material/dodo`):
 
 Handle placement matters: ARAP snaps handles to the nearest surface vertex, but biharmonic weights'
 `igl::boundary_conditions` only registers a handle within ~bbox·1e-3 of an actual vertex, so its two
-handles are exact `dodo_clean` vertices (head and feet). Alpha Shape uses a naive O(n²) tetrahedralizer, so it runs on a
-random ~300-vertex subset of the blob.
+handles are exact `dodo_clean` vertices (head and feet).
 
 All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe execute`).
 
@@ -152,3 +151,5 @@ All 38 examples are verified to execute cleanly in Synera (`SyneraHeadless.exe e
   than a dense Eigen eigensolver — ~0.3 s vs ~76 s on the 3k-vertex dodo, so it runs on full-res meshes.
 - QEM decimation uses libigl `qslim` (Geogram only offers vertex-clustering).
 - Poisson uses Geogram's bundled Kazhdan `PoissonRecon` (no first-class wrapper header).
+- Alpha Shape tetrahedralizes with Geogram's `Delaunay` (exact predicates, near-linear) and keeps the
+  boundary faces of the tetrahedra whose circumradius is below alpha — instant even on the full cloud.
