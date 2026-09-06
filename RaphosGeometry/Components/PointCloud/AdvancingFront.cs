@@ -24,7 +24,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Reconstruct a triangle mesh from points by ball-pivoting (an advancing-front method): a ball "
                 + "of the given radius rolls over the samples emitting triangles. Radius 0 auto-picks from spacing.");
-            GuiPriority = 14; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 20; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<Point3D>("Points", "Input point cloud.", ParameterAccess.List);
             InputParameterManager.AddParameter<SyneraDouble>("Radius", "Pivoting ball radius (0 = auto).", ParameterAccess.Item, new SyneraDouble(0.0));

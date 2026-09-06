@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Estimate a unit normal at each point by principal-component analysis of its k nearest "
                 + "neighbours. Normal orientation (inside/outside) is not resolved here.");
-            GuiPriority = 30;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

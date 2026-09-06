@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Weighted Locally Optimal Projection: denoise and evenly redistribute a point cloud by "
                 + "attraction to the input plus inter-point repulsion.");
-            GuiPriority = 50; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 10; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<Point3D>("Points", "Input point cloud.", ParameterAccess.List);
             InputParameterManager.AddParameter<SyneraInt>("Iterations", "Projection iterations.", ParameterAccess.Item, new SyneraInt(10));

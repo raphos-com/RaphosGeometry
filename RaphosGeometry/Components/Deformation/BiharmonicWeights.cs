@@ -24,7 +24,7 @@ namespace Raphos.Geometry.Components.Deformation
             Description = new LocalizableString(
                 "Bounded biharmonic skinning weights for a set of point handles: smooth, non-negative and "
                 + "partition-of-unity. Outputs the influence of one selected handle as a per-vertex field.");
-            GuiPriority = 40;
+            GuiPriority = 30;
             CanBeVisible = true;
             IsReadonly = false;
 

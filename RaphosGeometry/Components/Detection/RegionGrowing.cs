@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.Detection
             Description = new LocalizableString(
                 "Segment a point cloud into smooth (near-planar) regions by growing from seeds along the "
                 + "k-NN graph while normals stay consistent. Outputs a region index per point.");
-            GuiPriority = 20; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 30; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<Point3D>("Points", "Input point cloud.", ParameterAccess.List);
             InputParameterManager.AddParameter<SyneraDouble>("Angle", "Max normal deviation (degrees) within a region.", ParameterAccess.Item, new SyneraDouble(15.0));

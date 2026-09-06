@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.Remeshing
             Keywords = new LocalizableString("hole fill close watertight patch boundary");
             Description = new LocalizableString(
                 "Fill boundary holes in a triangle mesh. A maximum hole area of 0 fills every hole.");
-            GuiPriority = 20;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

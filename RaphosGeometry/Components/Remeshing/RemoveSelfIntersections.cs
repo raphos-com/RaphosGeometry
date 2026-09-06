@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Remeshing
             Description = new LocalizableString(
                 "Resolve self-intersections in a triangle mesh into a clean, intersection-free triangulation "
                 + "using exact arithmetic.");
-            GuiPriority = 50;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

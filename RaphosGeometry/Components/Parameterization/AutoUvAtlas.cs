@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Parameterization
             Description = new LocalizableString(
                 "Segment a mesh into charts along sharp edges and flatten + pack them (Geogram atlas). "
                 + "Outputs one UV per face-corner (three per triangle, in face order) so seams are preserved.");
-            GuiPriority = 40;
+            GuiPriority = 30;
             CanBeVisible = true;
             IsReadonly = false;
 

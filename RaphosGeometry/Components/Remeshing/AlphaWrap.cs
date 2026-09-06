@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Remeshing
             Description = new LocalizableString(
                 "Produce a watertight shrink-wrap of a messy or open mesh by sampling a signed-distance field "
                 + "on a grid and extracting the offset isosurface. Great for sealing scans.");
-            GuiPriority = 60; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 20; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<IMesh>("Mesh", "Input (possibly messy) mesh.", ParameterAccess.Item);
             InputParameterManager.AddParameter<SyneraDouble>("Offset", "Envelope offset distance (0 = auto).", ParameterAccess.Item, new SyneraDouble(0.0));

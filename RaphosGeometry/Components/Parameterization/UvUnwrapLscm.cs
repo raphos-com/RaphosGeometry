@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.Parameterization
             Description = new LocalizableString(
                 "Least-squares conformal UV unwrapping of an open (disk-topology) mesh. "
                 + "Outputs one UV coordinate per vertex as points in the XY plane (Z = 0).");
-            GuiPriority = 10;
+            GuiPriority = 30;
             CanBeVisible = true;
             IsReadonly = false;
 

@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Screened Poisson surface reconstruction from an oriented point cloud (requires normals). "
                 + "Produces a watertight surface and handles noise better than Co3Ne.");
-            GuiPriority = 12;
+            GuiPriority = 20;
             CanBeVisible = true;
             IsReadonly = false;
 

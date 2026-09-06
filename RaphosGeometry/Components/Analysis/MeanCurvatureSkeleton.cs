@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Analysis
             Description = new LocalizableString(
                 "Contract a mesh toward its curve skeleton via implicit mean-curvature (Laplacian) flow. "
                 + "Tubular parts collapse onto their centrelines; connectivity is preserved.");
-            GuiPriority = 70; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 20; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<IMesh>("Mesh", "Triangle mesh to contract.", ParameterAccess.Item);
             InputParameterManager.AddParameter<SyneraInt>("Iterations", "Contraction iterations.", ParameterAccess.Item, new SyneraInt(5));

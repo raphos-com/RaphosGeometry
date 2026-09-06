@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Analysis
             Description = new LocalizableString(
                 "Laplace-Beltrami eigenfunctions of a mesh (the spectral / 'manifold Fourier' basis). "
                 + "Outputs the eigenvalues and one selected eigenfunction as a per-vertex field.");
-            GuiPriority = 60;
+            GuiPriority = 20;
             CanBeVisible = true;
             IsReadonly = false;
 

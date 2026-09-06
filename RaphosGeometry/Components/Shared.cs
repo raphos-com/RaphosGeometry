@@ -21,6 +21,12 @@ namespace Raphos.Geometry.Components
         //   Mesh       — remeshing/repair, UV parameterization, deformation, marching cubes.
         //   Analysis   — curvature, geodesics, winding number, spectral/heat fields, distances.
         //   PointCloud — reconstruction, normals, denoise/simplify, and shape/feature detection.
+        // Within a subcategory, node GuiPriority is bucketed to exactly three values so the ribbon
+        // shows at most three group dividers per subcategory (Synera splits a subcategory into
+        // sub-groups by distinct GuiPriority). Convention: 10 / 20 / 30. Meaning per subcategory:
+        //   Mesh:       10 cleanup & repair | 20 remesh & convert | 30 deform & UV
+        //   Analysis:   10 fields & geodesics | 20 curvature & spectral | 30 distance & queries
+        //   PointCloud: 10 preprocess | 20 reconstruction | 30 detection & segmentation
         public static readonly ICategory Test = new Category("Test", 0, nameof(Test).ToString());
         public static readonly ICategory Mesh = new Category("Mesh", 10, nameof(Mesh).ToString());
         public static readonly ICategory Analysis = new Category("Analysis", 20, nameof(Analysis).ToString());

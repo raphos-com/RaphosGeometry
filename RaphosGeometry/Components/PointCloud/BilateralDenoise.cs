@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Feature-preserving point-cloud denoising: move each point along its normal by a bilateral "
                 + "(spatial + normal) weighted average of neighbour offsets. Requires per-point normals.");
-            GuiPriority = 55; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 10; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<Point3D>("Points", "Input point cloud.", ParameterAccess.List);
             InputParameterManager.AddParameter<Vector3D>("Normals", "Per-point normals.", ParameterAccess.List);

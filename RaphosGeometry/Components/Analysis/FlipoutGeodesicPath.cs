@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Analysis
             Description = new LocalizableString(
                 "Shortest geodesic path along a mesh surface between two points, via the FlipOut edge-flip "
                 + "algorithm. The nearest vertex to each input point is used as an endpoint.");
-            GuiPriority = 50;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

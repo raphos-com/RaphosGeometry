@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Remove outlier points whose N-th nearest neighbour lies farther than a given radius "
                 + "(Geogram kd-tree).");
-            GuiPriority = 20;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.Detection
             Description = new LocalizableString(
                 "Detect multiple primitives (planes, spheres, cylinders) in a point cloud with efficient RANSAC. "
                 + "Outputs a primitive index per point (-1 = unassigned) — extends single-primitive fitting to auto multi-detection.");
-            GuiPriority = 10; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 30; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<Point3D>("Points", "Input point cloud.", ParameterAccess.List);
             InputParameterManager.AddParameter<SyneraDouble>("Distance", "Inlier distance threshold.", ParameterAccess.Item, new SyneraDouble(0.05));

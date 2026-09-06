@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Analysis
             Description = new LocalizableString(
                 "Maximum (bounded) deviation between two meshes: directed A→B, B→A and the symmetric "
                 + "Hausdorff distance. Complements min-distance nodes by reporting the worst-case gap.");
-            GuiPriority = 40;
+            GuiPriority = 30;
             CanBeVisible = true;
             IsReadonly = false;
 

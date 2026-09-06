@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.Parameterization
             Description = new LocalizableString(
                 "Fixed-boundary harmonic UV parameterization: the mesh boundary is pinned to a circle and "
                 + "the interior is solved from the Laplace equation. Requires an open (disk-topology) mesh.");
-            GuiPriority = 20;
+            GuiPriority = 30;
             CanBeVisible = true;
             IsReadonly = false;
 

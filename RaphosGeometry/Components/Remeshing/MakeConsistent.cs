@@ -21,7 +21,7 @@ namespace Raphos.Geometry.Components.Remeshing
             Keywords = new LocalizableString("orient consistent normals flip winding coherent");
             Description = new LocalizableString(
                 "Coherently reorient the facets of a triangle mesh so neighbouring triangles wind the same way.");
-            GuiPriority = 40;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

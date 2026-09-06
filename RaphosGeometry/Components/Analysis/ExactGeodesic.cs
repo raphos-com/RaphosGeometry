@@ -24,7 +24,7 @@ namespace Raphos.Geometry.Components.Analysis
             Description = new LocalizableString(
                 "Exact polyhedral geodesic distance (MMP) from source points to every mesh vertex. "
                 + "The exact counterpart to the heat-method field; one value per vertex in mesh order.");
-            GuiPriority = 15;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Detection
             Description = new LocalizableString(
                 "Segment a mesh by the Shape Diameter Function (local thickness), giving a semantic part split "
                 + "rather than a dihedral-angle split. Outputs per-face SDF value and per-face segment label.");
-            GuiPriority = 40; CanBeVisible = true; IsReadonly = false;
+            GuiPriority = 30; CanBeVisible = true; IsReadonly = false;
 
             InputParameterManager.AddParameter<IMesh>("Mesh", "Triangle mesh to segment.", ParameterAccess.Item);
             InputParameterManager.AddParameter<SyneraInt>("Segments", "Number of segments (clusters).", ParameterAccess.Item, new SyneraInt(2));

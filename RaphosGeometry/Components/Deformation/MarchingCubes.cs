@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Deformation
             Description = new LocalizableString(
                 "Extract an isosurface triangle mesh from a scalar field sampled on a regular grid. "
                 + "Grid points and values must be listed in x-fastest, then y, then z order.");
-            GuiPriority = 10;
+            GuiPriority = 20;
             CanBeVisible = true;
             IsReadonly = false;
 

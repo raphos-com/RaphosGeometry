@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Mean nearest-neighbour spacing of a point cloud: a sizing field useful for choosing radii "
                 + "for reconstruction, simplification and remeshing.");
-            GuiPriority = 40;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

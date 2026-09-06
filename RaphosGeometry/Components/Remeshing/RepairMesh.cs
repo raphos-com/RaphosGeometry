@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.Remeshing
             Description = new LocalizableString(
                 "Clean up a triangle mesh: merge colocated vertices, remove duplicate and degenerate facets, "
                 + "and optionally re-triangulate.");
-            GuiPriority = 30;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

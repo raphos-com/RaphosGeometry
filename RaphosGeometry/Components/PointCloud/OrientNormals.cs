@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Consistently orient point-cloud normals by propagating sign along a minimum spanning tree "
                 + "of the k-nearest-neighbour graph (Hoppe et al.). Pairs with Estimate Normals.");
-            GuiPriority = 35;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

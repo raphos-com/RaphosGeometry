@@ -23,7 +23,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Reconstruct a triangle mesh from a point cloud using Geogram's Co3Ne algorithm. "
                 + "Supplying per-point normals improves the result.");
-            GuiPriority = 10;
+            GuiPriority = 20;
             CanBeVisible = true;
             IsReadonly = false;
 

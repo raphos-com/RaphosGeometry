@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Downsample a point cloud with a voxel grid: one representative (cell centroid) per occupied "
                 + "cell of the given size. Distinct from outlier removal — this thins uniformly.");
-            GuiPriority = 25;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

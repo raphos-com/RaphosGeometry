@@ -24,7 +24,7 @@ namespace Raphos.Geometry.Components.PointCloud
             Description = new LocalizableString(
                 "Alpha shape of a point set: the boundary triangles of the Delaunay tetrahedra whose "
                 + "circumradius is below alpha. Smaller alpha carves more concavity.");
-            GuiPriority = 15;
+            GuiPriority = 20;
             CanBeVisible = true;
             IsReadonly = false;
 

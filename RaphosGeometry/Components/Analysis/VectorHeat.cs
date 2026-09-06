@@ -22,7 +22,7 @@ namespace Raphos.Geometry.Components.Analysis
             Description = new LocalizableString(
                 "Parallel-transport a direction from a source point across the whole surface (Vector Heat "
                 + "Method). Returns one transported world-space vector per vertex.");
-            GuiPriority = 20;
+            GuiPriority = 10;
             CanBeVisible = true;
             IsReadonly = false;
 

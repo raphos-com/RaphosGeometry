@@ -1,9 +1,8 @@
 # Raphos Geometry — node reference
 
-What each node does, and what it's good for. The **Description** column is the text that already
-shows on each example's canvas; the **Useful for** column is the draft real-world framing for review —
-once you're happy with it, it can be folded into the examples (e.g. appended to the description
-annotation).
+What each node does, and what it's good for. Both columns now show on each example's canvas: the
+**Description** paragraph followed by a **Real-world use** line drawn from the **Useful for** column
+below. This table stays as the at-a-glance reference for all nodes.
 
 ## Mesh
 
