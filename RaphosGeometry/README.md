@@ -65,23 +65,25 @@ The change is additive and stateless (Release builds compile without it, since
 Tests are validated headlessly with VS's `vstest.console.exe` against the built
 `TestRaphosGeometry.dll` (the interop is decoupled from the Synera app runtime for this).
 
-## Status — complete: 38 nodes, all tested (39 MSTest cases green)
+## Status — complete: 39 nodes, all tested
 
 All five phases are implemented. Every node has a per-node SVG icon (light + dark) and a
 `.syn` example graph, placed exactly like the other add-ins
 (`Icons/RaphosGeometryCategory/<Sub>/<Class>.svg`, `Help/RaphosGeometryCategory/<Sub>/<Class>/<Class>.syn`).
-The Release `.synaddin` bundles all 38 examples and 79 icons; every example is verified to load **and
-actually execute** in Synera via `SyneraHeadless.exe execute` (which surfaces per-node errors that the
-lighter `info` check does not).
+The Release `.synaddin` bundles every example and icon. Each example is verified to load **and
+actually execute** in Synera via `SyneraHeadless.exe execute`, and — because "finished successfully"
+hides per-node errors — every example is additionally checked two ways: its per-node error/warning
+table is inspected, and its main output is **saved to a file and analysed** (vertex/point counts,
+scalar/vector ranges) to confirm the result is non-empty and meaningful, not just that the graph ran.
 
 The palette category **Raphos Geometry** has three subcategories, kept few so the ribbon stays compact
 (each subcategory is one ribbon group):
-- **Mesh** (14) — remeshing/repair, UV parameterization, deformation, marching cubes.
+- **Mesh** (15) — remeshing/repair, UV parameterization, deformation, marching cubes (grid + field).
 - **Analysis** (9) — curvature, geodesics, winding number, spectral/heat fields, distances.
 - **Point Cloud** (15) — reconstruction, normals, denoise/simplify, and shape/feature detection.
 
 - **Phase 0 — Skeleton** · **Phase 1 — MVP:** Quadric Decimate, Fill Holes, Heat Geodesic Field,
-  Curvature Tensor, Winding Number, Marching Cubes.
+  Curvature Tensor, Winding Number, Marching Cubes, Marching Cubes (Field).
 - **Phase 2 — imported (permissive libs):** Repair Mesh, Make Consistent, Remove Self-Intersections,
   Exact Geodesic Field, Hausdorff Distance, Geodesic Path (FlipOut), Manifold Harmonics, Vector Heat,
   UV Unwrap (LSCM / Harmonic / ARAP), Auto UV Atlas, Clip Mesh by Plane, ARAP Deformation, Biharmonic
@@ -116,8 +118,9 @@ The output is visualized per result type:
   field). Identical patterns on both = the bijective 3D↔2D map that lets you paint/bake a texture in
   2D and have it wrap onto the model. The flat map sits at z=0 below the 3D patch, so both are visible.
 - **Auto UV Atlas** emits one UV per face-corner (three per triangle, not per vertex). A raw UV list is
-  hard to read, so the node also outputs an **Atlas Mesh** — the packed charts rebuilt as a flat 2D
-  mesh — and the example previews that beside the 3D model (the atlas you would bake a texture into).
+  hard to read, so the node maps the UVs **back onto the model**: **Textured Mesh** is the 3D dodo
+  with a checkerboard painted through its UVs (even squares = low distortion) and **Atlas Mesh** is the
+  packed 2D layout you would bake into. `Checker Squares` tunes the texture frequency.
 - **Fill Holes** also returns each hole's patch as its own mesh (**Patches**) plus the number of holes
   filled (**Filled**): the example previews the patches to highlight exactly what was added, and shows
   the count in a panel.
@@ -130,18 +133,18 @@ The output is visualized per result type:
 
 Geometry is a real **3D dodo model** (from `raphos-website/artifacts/dodo`, in `_material/dodo`).
 `ImportGeometryAsMesh` is Parasolid-based and does **not** read `.obj`, so the dodo is provided as
-**STL** (Synera's native triangle-mesh format, read by `ImportStl`). Per-vertex / per-face /
-point-cloud nodes use `dodo.stl` (a ~3k-triangle decimation).
+**STL** (Synera's native triangle-mesh format, read by `ImportStl`).
 
-The raw dodo is a decimated **multi-part scan — 46 disconnected shells** — which is fine for those
-nodes but breaks any solver that needs a single manifold or a disk (deformation, parameterization,
-geodesics, spectral analysis and weights all fail or mislead on it). Those nodes are shown on small,
-topologically clean meshes (also in `_material/dodo`):
+The original `dodo.stl` was a decimated **multi-part scan — 46 disconnected shells** — which looked
+broken and misled any solver that needs a single manifold. It has been **retired from every example**:
+all mesh and point-cloud examples now use the clean genus-0 **`dodo_clean.stl`** (its vertices make a
+good, uniform point cloud too), so the old dodo no longer appears anywhere. The demo meshes (in
+`_material/dodo`):
 - **`dodo_clean.stl`** — a **genus-0 watertight dodo**, still recognisably the dodo. Made from
   `dodo_full.stl` by this add-in's own **Alpha Wrap** node (signed-distance field on a 160³ grid →
-  isosurface, i.e. a marching-cubes shrink-wrap) then **Quadric Decimate** to ~6k triangles → ARAP
-  deformation, biharmonic weights, heat/exact geodesics, geodesic path, vector heat, manifold
-  harmonics, winding number, curvature tensor.
+  isosurface, i.e. a marching-cubes shrink-wrap) then **Quadric Decimate** to ~6k triangles. Used by
+  essentially every mesh and point-cloud example (deformation, weights, geodesics, spectral, curvature,
+  reconstruction, normals, denoise/simplify, decimation, segmentation, atlas, …).
 - **`dodo_disk.stl`** — the clean dodo clipped by a horizontal plane (legs removed, via this add-in's
   own Clip Mesh by Plane node) → an on-brand open disk (one boundary loop) for the UV unwraps.
 - **`torus.stl`** — a clean genus-1 tube → mean-curvature skeleton (it contracts to the centre circle).
@@ -180,7 +183,9 @@ were verified to actually change the geometry:
   the native call asserted `variable_exists` inside Geogram — its re-triangulation reads algorithm
   CmdLine variables whose arg groups were never imported — so the node threw "External component has
   thrown an exception" and produced nothing. Now imports `standard`+`algo` arg groups, like Fill Holes.)
-- **Remove Outliers** → a cloud of clean points + 30 scattered flyer outliers → flyers removed.
+- **Remove Outliers** → the clean dodo cloud (642 pts) + 30 scattered flyers → flyers removed. The
+  N-th-neighbour test is sensitive to density: `Neighbours` is set to **8** (70 on this sparse a cloud
+  would flag every point and return nothing).
 - **Make Consistent** → `dodo_flipped.stl` (clean dodo with ~40% of faces reversed) → coherently
   re-oriented (verified: a valid closed manifold out).
 - **Bilateral Denoise** → a noisy blob cloud (points jittered along their normals) + the true normals
