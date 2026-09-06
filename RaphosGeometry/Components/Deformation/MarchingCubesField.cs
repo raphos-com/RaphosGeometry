@@ -5,17 +5,18 @@ using Synera.Core.Implementation.Graph;
 using Synera.DataTypes;
 using Synera.Kernels.DataTypes;
 using Synera.Kernels.Mesh;
+using Synera.Kernels.SpatialFields;
 using Synera.Localization;
-using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Raphos.Geometry.Components.Deformation
 {
     /// <summary>
-    /// Marching cubes driven by a scalar field over a box domain: you give the domain corners, the
-    /// grid resolution and one value per grid sample, and the node builds the regular grid itself and
-    /// extracts the isosurface. This is the "field in, surface out" form — no need to also supply the
-    /// grid point coordinates the way <see cref="MarchingCubes"/> does.
+    /// Marching cubes driven by a Synera spatial field (<see cref="ISpatialField"/>): give a field
+    /// (e.g. a distance field, or Raphos Tools' Surface Curvature Field), a box to sample it over and
+    /// the grid resolution, and the node samples the field on the grid and meshes the level set. This
+    /// is the "field in, surface out" form — no need to build the sample values yourself.
     /// </summary>
     [Guid("31b9b83d-0e2f-45cc-a250-151121e40eeb")]
     public sealed class MarchingCubesField : Node
@@ -25,16 +26,17 @@ namespace Raphos.Geometry.Components.Deformation
         {
             Category = Shared.RaphosGeometryCategory;
             Subcategory = Shared.Mesh;
-            Keywords = new LocalizableString("marching cubes isosurface field level set implicit sdf gyroid domain box");
+            Keywords = new LocalizableString("marching cubes isosurface field level set implicit sdf distance curvature domain box");
             Description = new LocalizableString(
-                "Extract an isosurface from a scalar field sampled on a box. Give the domain corners, the "
-                + "grid resolution (Nx*Ny*Nz) and one field value per sample in x-fastest, then y, then z order; "
-                + "the node builds the grid and meshes the level set. Use this when you have field values but not "
-                + "the grid coordinates.");
+                "Extract an isosurface from a Synera spatial field. Feed it any field (a distance field, "
+                + "a curvature field, an FEA result field), the box to sample it over and the grid resolution; "
+                + "the node samples the field's magnitude on the grid and meshes the chosen level set.");
             GuiPriority = 20;
             CanBeVisible = true;
             IsReadonly = false;
 
+            InputParameterManager.AddParameter<ISpatialField>(
+                "Field", "Spatial field to sample (distance, curvature, result, …).", ParameterAccess.Item);
             InputParameterManager.AddParameter<Point3D>(
                 "Min Corner", "Minimum corner of the box the field is sampled over.",
                 ParameterAccess.Item, new Point3D(0, 0, 0));
@@ -48,10 +50,7 @@ namespace Raphos.Geometry.Components.Deformation
             InputParameterManager.AddParameter<SyneraInt>(
                 "Nz", "Number of grid samples along Z.", ParameterAccess.Item, new SyneraInt(2));
             InputParameterManager.AddParameter<SyneraDouble>(
-                "Values", "Field value at each grid sample (Nx*Ny*Nz), x-fastest then y then z order.",
-                ParameterAccess.List);
-            InputParameterManager.AddParameter<SyneraDouble>(
-                "Isovalue", "Field level to extract the surface at.", ParameterAccess.Item, new SyneraDouble(0.0));
+                "Isovalue", "Field magnitude to extract the surface at.", ParameterAccess.Item, new SyneraDouble(0.0));
 
             OutputParameterManager.AddParameter<IMesh>(
                 new LocalizableString("Mesh"),
@@ -61,47 +60,41 @@ namespace Raphos.Geometry.Components.Deformation
 
         protected override void SolveInstance(IDataAccess dataAccess)
         {
-            if (!dataAccess.GetData(0, out Point3D lo) |
-                !dataAccess.GetData(1, out Point3D hi) |
-                !dataAccess.GetData(2, out int nx) |
-                !dataAccess.GetData(3, out int ny) |
-                !dataAccess.GetData(4, out int nz) |
-                !dataAccess.GetListData(5, out IList<double> values) |
+            if (!dataAccess.GetData(0, out ISpatialField field) |
+                !dataAccess.GetData(1, out Point3D lo) |
+                !dataAccess.GetData(2, out Point3D hi) |
+                !dataAccess.GetData(3, out int nx) |
+                !dataAccess.GetData(4, out int ny) |
+                !dataAccess.GetData(5, out int nz) |
                 !dataAccess.GetData(6, out double iso))
                 return;
 
-            if (nx < 2 || ny < 2 || nz < 2)
-            {
-                AddError("Each of Nx, Ny, Nz must be at least 2.");
-                return;
-            }
+            if (field == null) { AddError(0, "Provide a spatial field to sample."); return; }
+            if (nx < 2 || ny < 2 || nz < 2) { AddError("Each of Nx, Ny, Nz must be at least 2."); return; }
 
-            long expected = (long)nx * ny * nz;
-            if (values.Count != expected)
-            {
-                AddError(5, $"Values ({values.Count}) must equal Nx*Ny*Nz ({expected}).");
-                return;
-            }
-
-            // Build the regular grid the field is sampled on (x-fastest, then y, then z).
-            var grid = new Point3D[expected];
+            // Build the regular grid (x-fastest, then y, then z).
+            int count = nx * ny * nz;
+            var grid = new Point3D[count];
             int idx = 0;
             for (int k = 0; k < nz; k++)
             {
-                double tz = nz > 1 ? (double)k / (nz - 1) : 0.0;
-                double z = lo.Z + tz * (hi.Z - lo.Z);
+                double z = lo.Z + (nz > 1 ? (double)k / (nz - 1) : 0.0) * (hi.Z - lo.Z);
                 for (int j = 0; j < ny; j++)
                 {
-                    double ty = ny > 1 ? (double)j / (ny - 1) : 0.0;
-                    double y = lo.Y + ty * (hi.Y - lo.Y);
+                    double y = lo.Y + (ny > 1 ? (double)j / (ny - 1) : 0.0) * (hi.Y - lo.Y);
                     for (int i = 0; i < nx; i++)
                     {
-                        double tx = nx > 1 ? (double)i / (nx - 1) : 0.0;
-                        double x = lo.X + tx * (hi.X - lo.X);
+                        double x = lo.X + (nx > 1 ? (double)i / (nx - 1) : 0.0) * (hi.X - lo.X);
                         grid[idx++] = new Point3D(x, y, z);
                     }
                 }
             }
+
+            // Sample the field over the grid; use the field vector's magnitude as the scalar value.
+            FieldVector[] fv = field.EvaluateSparsely(grid, new Synera.Utilities.Progress(), out int[] _);
+            var values = new double[count];
+            for (int i = 0; i < count; i++)
+                values[i] = fv[i].Length();
 
             (Point3D[] points, MeshFace[] faces) = MeshFunctions.MarchingCubes(values, grid, nx, ny, nz, iso);
             if (points.Length == 0)
