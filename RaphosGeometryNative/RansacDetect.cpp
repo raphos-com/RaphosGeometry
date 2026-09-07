@@ -45,7 +45,8 @@ int RansacDetect(
     double* pnts, Long nv,
     double distThreshold, Long minSupport, Long iterations,
     Long** labels, Long& nLabels,
-    Long** types, Long& nTypes
+    Long** types, Long& nTypes,
+    double** aParams, double** bParams, double** radii
 ) {
     using namespace GEO;
     initialize();
@@ -76,7 +77,7 @@ int RansacDetect(
     int trials = (int)(iterations > 0 ? iterations : 200);
 
     std::vector<Long> label((size_t)nv, -1);
-    std::vector<int> primTypes;
+    std::vector<Prim> prims;
     std::mt19937 rng(12345);
 
     std::vector<Long> remaining((size_t)nv);
@@ -139,8 +140,8 @@ int RansacDetect(
 
         if (bestCount < minSup) break;
 
-        Long primIdx = (Long)primTypes.size();
-        primTypes.push_back(best.type);
+        Long primIdx = (Long)prims.size();
+        prims.push_back(best);
         std::vector<Long> nextRemaining;
         for (size_t k = 0; k < remaining.size(); k++) {
             if (bestIn[k]) label[remaining[k]] = primIdx;
@@ -154,9 +155,25 @@ int RansacDetect(
     for (Long i = 0; i < nv; i++) lbuf[i] = label[i];
     *labels = lbuf;
 
-    nTypes = (Long)primTypes.size();
+    nTypes = (Long)prims.size();
     Long* tbuf = new Long[nTypes > 0 ? nTypes : 1];
-    for (Long i = 0; i < nTypes; i++) tbuf[i] = primTypes[i];
+    double* abuf = new double[nTypes > 0 ? nTypes * 3 : 1];
+    double* bbuf = new double[nTypes > 0 ? nTypes * 3 : 1];
+    double* rbuf = new double[nTypes > 0 ? nTypes : 1];
+    for (Long i = 0; i < nTypes; i++) {
+        const Prim& p = prims[i];
+        tbuf[i] = p.type;
+        // a = plane point / sphere centre / cylinder axis point
+        abuf[i * 3 + 0] = p.a.x(); abuf[i * 3 + 1] = p.a.y(); abuf[i * 3 + 2] = p.a.z();
+        // b = plane normal / (sphere: zero) / cylinder axis dir
+        if (p.type == 1) { bbuf[i * 3 + 0] = 0.0; bbuf[i * 3 + 1] = 0.0; bbuf[i * 3 + 2] = 0.0; }
+        else { bbuf[i * 3 + 0] = p.b.x(); bbuf[i * 3 + 1] = p.b.y(); bbuf[i * 3 + 2] = p.b.z(); }
+        // r = sphere / cylinder radius (plane: 0)
+        rbuf[i] = p.type == 0 ? 0.0 : p.r;
+    }
     *types = tbuf;
+    *aParams = abuf;
+    *bParams = bbuf;
+    *radii = rbuf;
     return RAPHOS_SUCCESS;
 }

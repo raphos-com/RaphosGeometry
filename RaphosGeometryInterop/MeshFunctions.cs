@@ -746,23 +746,47 @@ namespace Raphos.Geometry.Interop
             return arr;
         }
 
-        /// <summary>RANSAC multi-primitive detection. Returns per-point primitive index (-1 unassigned) and per-primitive type code (0 plane,1 sphere,2 cylinder).</summary>
-        public static (int[] labels, int[] primitiveTypes) RansacDetect(IList<Point3D> pnts, double distThreshold, int minSupport, int iterations)
+        /// <summary>
+        /// RANSAC multi-primitive detection. Returns the per-point primitive index (-1 unassigned), and
+        /// for each detected primitive its type code (0 plane, 1 sphere, 2 cylinder) and fitted parameters:
+        /// <c>a</c> (plane point / sphere centre / cylinder axis point), <c>b</c> (plane normal /
+        /// cylinder axis direction / zero for sphere) and <c>radius</c> (sphere/cylinder; 0 for a plane).
+        /// </summary>
+        public static (int[] labels, int[] primitiveTypes, Point3D[] a, Vector3D[] b, double[] radius) RansacDetect(
+            IList<Point3D> pnts, double distThreshold, int minSupport, int iterations)
         {
             ArrayUtils.ArrayFromPoints(pnts, out IntPtr pPtr, out _);
-            IntPtr oL = IntPtr.Zero, oT = IntPtr.Zero;
-            GCHandle hL = default, hT = default;
+            IntPtr oL = IntPtr.Zero, oT = IntPtr.Zero, oA = IntPtr.Zero, oB = IntPtr.Zero, oR = IntPtr.Zero;
+            GCHandle hL = default, hT = default, hA = default, hB = default, hR = default;
             try
             {
                 UnsafeNativeMethods.RansacDetect(pPtr, pnts.Count, distThreshold, minSupport, iterations,
-                    out oL, out long nL, out oT, out long nT);
+                    out oL, out long nL, out oT, out long nT, out oA, out oB, out oR);
                 hL = GCHandle.Alloc(oL, GCHandleType.Pinned);
                 hT = GCHandle.Alloc(oT, GCHandleType.Pinned);
+                hA = GCHandle.Alloc(oA, GCHandleType.Pinned);
+                hB = GCHandle.Alloc(oB, GCHandleType.Pinned);
+                hR = GCHandle.Alloc(oR, GCHandleType.Pinned);
                 int[] labels = ReadLongs(oL, nL).Select(x => (int)x).ToArray();
                 int[] types = ReadLongs(oT, nT).Select(x => (int)x).ToArray();
-                return (labels, types);
+                double[] av = ReadDoubles(oA, nT * 3);
+                double[] bv = ReadDoubles(oB, nT * 3);
+                double[] radius = ReadDoubles(oR, nT);
+                var a = new Point3D[nT];
+                var b = new Vector3D[nT];
+                for (int i = 0; i < nT; i++)
+                {
+                    a[i] = new Point3D(av[i * 3], av[i * 3 + 1], av[i * 3 + 2]);
+                    b[i] = new Vector3D(bv[i * 3], bv[i * 3 + 1], bv[i * 3 + 2]);
+                }
+                return (labels, types, a, b, radius);
             }
-            finally { FreeInput(pPtr); ReleaseLongs(oL, ref hL); ReleaseLongs(oT, ref hT); }
+            finally
+            {
+                FreeInput(pPtr);
+                ReleaseLongs(oL, ref hL); ReleaseLongs(oT, ref hT);
+                ReleaseDoubles(oA, ref hA); ReleaseDoubles(oB, ref hB); ReleaseDoubles(oR, ref hR);
+            }
         }
 
         /// <summary>Region-growing segmentation into smooth regions. Returns per-point region index (-1 if unassigned) and region count.</summary>

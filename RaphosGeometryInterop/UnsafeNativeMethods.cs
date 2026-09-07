@@ -305,11 +305,13 @@ namespace Raphos.Geometry.Interop
         // ---- Phase 3-4 from-scratch algorithms ----
 
         // int RansacDetect(double* pnts, Long nv, double distThreshold, Long minSupport, Long iterations,
-        //                  Long** labels, Long& nLabels, Long** types, Long& nTypes);
+        //                  Long** labels, Long& nLabels, Long** types, Long& nTypes,
+        //                  double** aParams, double** bParams, double** radii);
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         internal static extern RaphosInteropResult RansacDetect(
             [In] IntPtr pnts, [In] long nv, [In] double distThreshold, [In] long minSupport, [In] long iterations,
-            [Out] out IntPtr labels, [Out] out long nLabels, [Out] out IntPtr types, [Out] out long nTypes
+            [Out] out IntPtr labels, [Out] out long nLabels, [Out] out IntPtr types, [Out] out long nTypes,
+            [Out] out IntPtr aParams, [Out] out IntPtr bParams, [Out] out IntPtr radii
         );
 
         // int RegionGrowing(double* pnts, Long nv, double angleDeg, Long k, Long minRegion,

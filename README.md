@@ -152,7 +152,8 @@ good, uniform point cloud too), so the old dodo no longer appears anywhere. The 
   each point inside (≈1) / outside (≈0) so you see the dodo's cross-section profile.
 - **`planes.stl`** — a subdivided cube whose six planes give Region Growing several planar segments.
 - **`primitives.stl`** — a plane + sphere + cylinder in one cloud → RANSAC detects all three, so its
-  **Shape Type** output shows "Plane", "Sphere" and "Cylinder" side by side (not just planes).
+  **Shape Type** output shows "Plane", "Sphere" and "Cylinder" side by side (not just planes), and its
+  **Fitted Shapes** output returns the recovered solids overlaid on the cloud.
 - **`blob.stl`** — a small clean convex-ish cloud → Alpha Shape's point set.
 - **`dodo_full.stl`** — the full-res dodo, the second mesh in the Hausdorff example (nominal vs decimated).
 
