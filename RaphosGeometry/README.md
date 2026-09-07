@@ -150,7 +150,9 @@ good, uniform point cloud too), so the old dodo no longer appears anywhere. The 
 - **`torus.stl`** — a clean genus-1 tube → mean-curvature skeleton (it contracts to the centre circle).
 - **`slice.stl`** — a vertical plane through the standing dodo → winding number samples it, colouring
   each point inside (≈1) / outside (≈0) so you see the dodo's cross-section profile.
-- **`planes.stl`** — a subdivided cube whose six planes give RANSAC / Region Growing several segments.
+- **`planes.stl`** — a subdivided cube whose six planes give Region Growing several planar segments.
+- **`primitives.stl`** — a plane + sphere + cylinder in one cloud → RANSAC detects all three, so its
+  **Shape Type** output shows "Plane", "Sphere" and "Cylinder" side by side (not just planes).
 - **`blob.stl`** — a small clean convex-ish cloud → Alpha Shape's point set.
 - **`dodo_full.stl`** — the full-res dodo, the second mesh in the Hausdorff example (nominal vs decimated).
 
